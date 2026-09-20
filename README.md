@@ -1,6 +1,6 @@
-# 🚀 OpenCode & Claude Code Agent Studio
+# OpenCode & Claude Code Agent Studio
 
-**Transforme o seu OpenCode e Claude Code em uma Software House Autônoma Completa.**
+Transforme o seu OpenCode e Claude Code em uma Software House Autônoma Completa.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenCode](https://img.shields.io/badge/OpenCode-V2-blue)](https://opencode.ai)
@@ -9,26 +9,26 @@
 
 ---
 
-## 🎯 O Problema que este Blueprint Resolve
+## O Problema que este Blueprint Resolve
 
-Agentes de IA convencionais sofrem de **três vícios graves**:
+Agentes de IA convencionais sofrem de três vícios graves:
 1. **Causam danos colaterais:** Você pede para alterar um botão e eles refatoram 10 arquivos aleatórios.
 2. **Gambiarras invisíveis:** Usam `any`, `@ts-ignore` e `eslint-disable` para mascarar erros de tipagem.
 3. **Falta de validação cega:** O mesmo agente que escreve o código se auto-avalia, diz que está tudo bem e entrega tarefas quebradas.
 
 ---
 
-## 💡 A Solução (Suporte Duplo: OpenCode + Claude Code)
+## A Solução (Suporte Duplo: OpenCode + Claude Code)
 
-O **Agent Studio** utiliza o bloqueio físico de permissões e governança de subagentes para criar uma **esteira hierárquica e sob demanda**:
+O **Agent Studio** utiliza o bloqueio físico de permissões e governança de subagentes para criar uma esteira hierárquica e sob demanda:
 
 ```text
 Você (Prompt simples, sem comandos especiais)
   │
   ▼
 [ MANAGER ] (Diretor)
-  │ 🚫 Não coda diretamente
-  │ 🎯 Classifica a intenção no planejamento (PLAN)
+  │ Bloqueado de codar diretamente
+  │ Classifica a intenção no planejamento (PLAN)
   │
   ├─▶ [ designer ]   ── Telas React, Tailwind, Framer Motion (Anthropic & Vercel Guidelines)
   ├─▶ [ architect ]  ── Backend, APIs REST, Banco, Bugs (Vercel Best Practices & RFC 7807)
@@ -38,15 +38,15 @@ Você (Prompt simples, sem comandos especiais)
   │
   ▼
 [ REVIEWER ] (Auditor Cego / Quality Gate)
-  │ 🔍 Avaliação em 2 eixos (Padrões Martin Fowler x Especificação do Usuário)
-  │ 🛑 Veto Imediato: Se violar a Constituição Sênior -> FAIL
+  │ Avaliação em 2 eixos (Padrões Martin Fowler x Especificação do Usuário)
+  │ Veto Imediato: Se violar a Constituição Sênior -> FAIL
   │
   └─▶ Entrega ao Usuário SOMENTE com carimbo [ PASS ]
 ```
 
 ---
 
-## 👥 A Equipe Especializada
+## A Equipe Especializada
 
 | Agente | Função | Skills Oficiais Embutidas (Top Mundial) |
 | :--- | :--- | :--- |
@@ -60,7 +60,7 @@ Você (Prompt simples, sem comandos especiais)
 
 ---
 
-## 📜 Constituição de Engenharia Sênior (5 Regras Invioláveis)
+## Constituição de Engenharia Sênior (5 Regras Invioláveis)
 
 Nenhum código é aprovado pelo `reviewer` se violar estas diretrizes:
 1. **Escopo Fechado:** Proibido tocar em arquivos fora da solicitação.
@@ -71,7 +71,7 @@ Nenhum código é aprovado pelo `reviewer` se violar estas diretrizes:
 
 ---
 
-## ⚡ Instalação Rápida
+## Instalação Rápida
 
 ### Opção A: Para OpenCode
 Clone o repositório e execute o instalador:
@@ -91,20 +91,20 @@ cp config/CLAUDE.md.template ~/.claude/CLAUDE.md
 
 ---
 
-## 🛠️ Como Usar
+## Como Usar
 
 Basta abrir o seu **OpenCode** ou **Claude Code** e digitar qualquer necessidade de negócio em linguagem natural:
 
 - *"Crie uma tela de Login moderna com Tailwind e validação com Zod."*  
-  ➡️ O Manager aciona o **`designer`** e valida com o **`reviewer`**.
+  -> O Manager aciona o **`designer`** e valida com o **`reviewer`**.
 - *"Crie o endpoint POST /api/tickets salvando no banco de dados."*  
-  ➡️ O Manager aciona o **`architect`** e valida com o **`reviewer`**.
+  -> O Manager aciona o **`architect`** e valida com o **`reviewer`**.
 - *"Verifique se temos vulnerabilidades de injeção no endpoint de login."*  
-  ➡️ O Manager aciona o **`secops`** e valida com o **`reviewer`**.
+  -> O Manager aciona o **`secops`** e valida com o **`reviewer`**.
 
 ---
 
-## 🙏 Créditos e Agradecimentos
+## Créditos e Agradecimentos
 
 - **Motor de Orquestração OpenCode:** Desenvolvido graças ao plugin oficial [`@beremaran/opencode-agent-tree`](https://github.com/beremaran/opencode-agent-tree).
 - **Skills de Classe Mundial:**
@@ -115,6 +115,6 @@ Basta abrir o seu **OpenCode** ou **Claude Code** e digitar qualquer necessidade
 
 ---
 
-## 📄 Licença
+## Licença
 
 Distribuído sob a licença MIT. Veja `LICENSE` para mais detalhes.
