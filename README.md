@@ -1,9 +1,10 @@
-# 🚀 OpenCode Agent Studio
+# 🚀 OpenCode & Claude Code Agent Studio
 
-**Transforme o seu OpenCode em uma Software House Autônoma Completa.**
+**Transforme o seu OpenCode e Claude Code em uma Software House Autônoma Completa.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenCode](https://img.shields.io/badge/OpenCode-V2-blue)](https://opencode.ai)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-Supported-purple)](https://claude.ai)
 [![Plugin](https://img.shields.io/badge/Powered%20By-%40beremaran%2Fopencode--agent--tree-purple)](https://github.com/beremaran/opencode-agent-tree)
 
 ---
@@ -17,16 +18,16 @@ Agentes de IA convencionais sofrem de **três vícios graves**:
 
 ---
 
-## 💡 A Solução
+## 💡 A Solução (Suporte Duplo: OpenCode + Claude Code)
 
-O **OpenCode Agent Studio** utiliza o bloqueio físico de permissões da engine do OpenCode para criar uma **esteira hierárquica e sob demanda**:
+O **Agent Studio** utiliza o bloqueio físico de permissões e governança de subagentes para criar uma **esteira hierárquica e sob demanda**:
 
 ```text
 Você (Prompt simples, sem comandos especiais)
   │
   ▼
 [ MANAGER ] (Diretor)
-  │ 🚫 Bloqueado fisicamente de codar (Sem ferramentas edit/bash)
+  │ 🚫 Não coda diretamente
   │ 🎯 Classifica a intenção no planejamento (PLAN)
   │
   ├─▶ [ designer ]   ── Telas React, Tailwind, Framer Motion (Anthropic & Vercel Guidelines)
@@ -70,27 +71,29 @@ Nenhum código é aprovado pelo `reviewer` se violar estas diretrizes:
 
 ---
 
-## ⚡ Instalação Rápida (1 Comando)
+## ⚡ Instalação Rápida
 
+### Opção A: Para OpenCode
 Clone o repositório e execute o instalador:
-
 ```bash
 git clone https://github.com/vsalome41/opencode-agent-studio.git
 cd opencode-agent-studio
 ./install.sh
 ```
 
-Ou aplique manualmente usando o arquivo de template em `config/opencode.json.template`.
+### Opção B: Para Claude Code
+Basta copiar o template de governança para o seu diretório global:
+```bash
+cp config/CLAUDE.md.template ~/.claude/CLAUDE.md
+# Ou se você usa um diretório personalizado:
+# cp config/CLAUDE.md.template ~/.claude-or/CLAUDE.md
+```
 
 ---
 
 ## 🛠️ Como Usar
 
-Abra o seu OpenCode normalmente:
-```bash
-opencode
-```
-O modo **`Manager`** iniciará automaticamente. Basta digitar o que você precisa:
+Basta abrir o seu **OpenCode** ou **Claude Code** e digitar qualquer necessidade de negócio em linguagem natural:
 
 - *"Crie uma tela de Login moderna com Tailwind e validação com Zod."*  
   ➡️ O Manager aciona o **`designer`** e valida com o **`reviewer`**.
@@ -99,14 +102,11 @@ O modo **`Manager`** iniciará automaticamente. Basta digitar o que você precis
 - *"Verifique se temos vulnerabilidades de injeção no endpoint de login."*  
   ➡️ O Manager aciona o **`secops`** e valida com o **`reviewer`**.
 
-Para voltar aos modos clássicos a qualquer momento, digite `/agent build` ou `/agent plan`.
-
 ---
 
 ## 🙏 Créditos e Agradecimentos
 
-Este projeto é um preset de orquestração construído sobre os ombros de gigantes:
-- **Motor de Orquestração:** Desenvolvido graças ao plugin oficial [`@beremaran/opencode-agent-tree`](https://github.com/beremaran/opencode-agent-tree), responsável pela negação física de ferramentas ao orquestrador.
+- **Motor de Orquestração OpenCode:** Desenvolvido graças ao plugin oficial [`@beremaran/opencode-agent-tree`](https://github.com/beremaran/opencode-agent-tree).
 - **Skills de Classe Mundial:**
   - [Matt Pocock](https://github.com/mattpocock/skills) (`code-review`, `diagnosing-bugs`, `grill-me`).
   - [Anthropic](https://github.com/anthropics/skills) (`frontend-design`).
