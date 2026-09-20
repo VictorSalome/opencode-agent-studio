@@ -76,7 +76,7 @@ Nenhum código é aprovado pelo `reviewer` se violar estas diretrizes:
 ### Opção A: Para OpenCode
 Clone o repositório e execute o instalador:
 ```bash
-git clone https://github.com/vsalome41/opencode-agent-studio.git
+git clone https://github.com/VictorSalome/opencode-agent-studio.git
 cd opencode-agent-studio
 ./install.sh
 ```
