@@ -20,7 +20,7 @@ Agentes de IA convencionais sofrem de três vícios graves:
 
 ## A Solução (Suporte Duplo: OpenCode + Claude Code)
 
-O **Agent Studio** utiliza o bloqueio físico de permissões e governança de subagentes para criar uma esteira hierárquica e sob demanda:
+O **Agent Studio** utiliza o conceito de **Árvore de Agentes (Agent Tree)** para criar uma esteira hierárquica e sob demanda:
 
 ```text
 Você (Prompt simples, sem comandos especiais)
@@ -43,6 +43,15 @@ Você (Prompt simples, sem comandos especiais)
   │
   └─▶ Entrega ao Usuário SOMENTE com carimbo [ PASS ]
 ```
+
+### Como a Árvore Opera em Cada Plataforma
+
+| Mecanismo | No OpenCode | No Claude Code |
+| :--- | :--- | :--- |
+| **Motor da Árvore** | Plugin `@beremaran/opencode-agent-tree` | Ferramenta nativa de subagentes `Agent` / `Task` |
+| **Bloqueio do Manager** | Físico (ferramentas `edit` e `bash` removidas do schema) | Governança estrita via diretiva `CLAUDE.md` |
+| **Execução dos Especialistas** | Subagentes dedicados (`orchestratorDepth: 1`) | Subagentes despachados em background |
+| **Quality Gate** | Resposta final bloqueada até `PASS` do Reviewer | Resposta final bloqueada até `PASS` do Reviewer |
 
 ---
 
