@@ -82,21 +82,17 @@ Nenhum código é aprovado pelo `reviewer` se violar estas diretrizes:
 
 ## Instalação Rápida
 
-### Opção A: Para OpenCode
-Clone o repositório e execute o instalador:
 ```bash
-git clone https://github.com/VictorSalome/opencode-agent-studio.git
-cd opencode-agent-studio
-./install.sh
+# Para OpenCode
+npx opencode-agent-studio@latest --opencode
+
+# Para Claude Code
+npx opencode-agent-studio@latest --claude
 ```
 
-### Opção B: Para Claude Code
-Basta copiar o template de governança para o seu diretório global:
-```bash
-cp config/CLAUDE.md.template ~/.claude/CLAUDE.md
-# Ou se você usa um diretório personalizado:
-# cp config/CLAUDE.md.template ~/.claude-or/CLAUDE.md
-```
+### Configurando seu Modelo de IA (Para usuários OpenCode)
+
+O instalador detecta automaticamente o modelo configurado no seu OpenCode (ex: `openai/gpt-4o` ou `9router/freecode`) e o propaga para todos os subagentes. Caso precise alterar o modelo no futuro, basta mudá-lo na interface de Configurações (Settings) do OpenCode e rodar o comando `npx` de instalação novamente para sincronizar a equipe.
 
 ---
 
