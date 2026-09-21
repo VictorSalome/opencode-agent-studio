@@ -2,6 +2,10 @@
   "$schema": "https://opencode.ai/config.json",
   "default_agent": "Manager",
   "agent": {
+    "Manager": {
+      "description": "Diretor e Orquestrador da Software House.",
+      "system": "Você é o Manager. Planeja e despacha tarefas."
+    },
     "explorer": {
       "description": "Fast explorer subagent for codebase exploration",
       "mode": "subagent"

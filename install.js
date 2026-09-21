@@ -12,16 +12,15 @@ console.log("   Powered by @beremaran/opencode-agent-tree");
 console.log("======================================================");
 console.log("");
 
-const homeDir = os.homedir();
-const configDir = path.join(homeDir, '.config', 'opencode');
-const configFile = path.join(configDir, 'opencode.json');
-const backupFile = path.join(configDir, `opencode.json.backup.${Math.floor(Date.now() / 1000)}`);
+const args = process.argv.slice(2);
+const shouldInstallClaude = args.includes('--claude');
+const shouldInstallOpenCode = args.includes('--opencode') || args.length === 0;
 
-fs.mkdirSync(configDir, { recursive: true });
+const homeDir = os.homedir();
 
 function runCmd(cmd) {
   try {
-    execSync(cmd, { stdio: 'ignore' });
+    execSync(cmd, { stdio: 'inherit' });
     return true;
   } catch (e) {
     return false;
@@ -37,62 +36,89 @@ function commandExists(cmd) {
   }
 }
 
-console.log("📦 1/3: Instalando plugin de orquestração @beremaran/opencode-agent-tree...");
-if (commandExists('opencode')) {
-  runCmd('opencode plugin add github:beremaran/opencode-agent-tree');
-} else {
-  const localOpencode = path.join(homeDir, '.opencode', 'bin', 'opencode' + (process.platform === 'win32' ? '.cmd' : ''));
-  if (fs.existsSync(localOpencode)) {
-    runCmd(`"${localOpencode}" plugin add github:beremaran/opencode-agent-tree`);
+if (shouldInstallClaude) {
+  console.log("🤖 Configurando Claude Code...");
+  const claudeDir = path.join(homeDir, '.claude');
+  const claudeTemplateFile = path.join(__dirname, 'config', 'CLAUDE.md.template');
+  const claudeConfigFile = path.join(claudeDir, 'CLAUDE.md');
+
+  fs.mkdirSync(claudeDir, { recursive: true });
+
+  if (fs.existsSync(claudeTemplateFile)) {
+    fs.copyFileSync(claudeTemplateFile, claudeConfigFile);
+    console.log(`✅ Sucesso: ${claudeConfigFile} criado com as diretrizes do Agent Studio.`);
+  } else {
+    console.log(`⚠️ Aviso: Template ${claudeTemplateFile} não encontrado.`);
   }
 }
 
-console.log("🌟 2/3: Instalando skills oficiais do ranking mundial...");
-if (commandExists('npx')) {
-  console.log("   -> Instalando frontend-design, vercel-react-best-practices, web-design-guidelines, code-review...");
-  const skills = [
-    'anthropics/skills@frontend-design',
-    'vercel-labs/agent-skills@vercel-react-best-practices',
-    'vercel-labs/agent-skills@web-design-guidelines',
-    'mattpocock/skills@code-review',
-    'mattpocock/skills@diagnosing-bugs',
-    'mattpocock/skills@grill-me'
-  ];
-  
-  for (const skill of skills) {
-    runCmd(`npx skills add ${skill} -g -y`);
+if (shouldInstallOpenCode) {
+  console.log("🤖 Configurando OpenCode...");
+  const configDir = path.join(homeDir, '.config', 'opencode');
+  const configFile = path.join(configDir, 'opencode.json');
+  const backupFile = path.join(configDir, `opencode.json.backup.${Math.floor(Date.now() / 1000)}`);
+
+  fs.mkdirSync(configDir, { recursive: true });
+
+  console.log("📦 1/3: Instalando plugin de orquestração @beremaran/opencode-agent-tree...");
+  if (commandExists('opencode')) {
+    runCmd('opencode plugin add github:beremaran/opencode-agent-tree');
+  } else {
+    const localOpencode = path.join(homeDir, '.opencode', 'bin', 'opencode' + (process.platform === 'win32' ? '.cmd' : ''));
+    if (fs.existsSync(localOpencode)) {
+      runCmd(`"${localOpencode}" plugin add github:beremaran/opencode-agent-tree`);
+    }
   }
-}
 
-console.log("⚙️  3/3: Configurando agentes e esteira de Quality Gate...");
-const templateFile = path.join(__dirname, 'config', 'opencode.json.template');
-
-if (fs.existsSync(configFile)) {
-  fs.copyFileSync(configFile, backupFile);
-  console.log(`   (Backup da sua configuração salvo em: ${backupFile})`);
-}
-
-let templateData = {};
-try {
-  if (fs.existsSync(templateFile)) {
-    templateData = JSON.parse(fs.readFileSync(templateFile, 'utf8'));
+  console.log("🌟 2/3: Instalando skills oficiais do ranking mundial...");
+  if (commandExists('npx')) {
+    console.log("   -> Instalando frontend-design, vercel-react-best-practices, web-design-guidelines, code-review...");
+    const skills = [
+      'anthropics/skills@frontend-design',
+      'vercel-labs/agent-skills@vercel-react-best-practices',
+      'vercel-labs/agent-skills@web-design-guidelines',
+      'mattpocock/skills@code-review',
+      'mattpocock/skills@diagnosing-bugs',
+      'mattpocock/skills@grill-me'
+    ];
+    
+    for (const skill of skills) {
+      runCmd(`npx skills add ${skill} -g -y`);
+    }
   }
-} catch (e) {}
 
-let currentData = {};
-if (fs.existsSync(configFile)) {
+  console.log("⚙️  3/3: Configurando agentes e esteira de Quality Gate...");
+  const templateFile = path.join(__dirname, 'config', 'opencode.json.template');
+
+  if (fs.existsSync(configFile)) {
+    fs.copyFileSync(configFile, backupFile);
+    console.log(`   (Backup da sua configuração salvo em: ${backupFile})`);
+  }
+
+  let templateData = {};
   try {
-    currentData = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+    if (fs.existsSync(templateFile)) {
+      templateData = JSON.parse(fs.readFileSync(templateFile, 'utf8'));
+    }
   } catch (e) {}
+
+  let currentData = {};
+  if (fs.existsSync(configFile)) {
+    try {
+      currentData = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+    } catch (e) {}
+  }
+
+  const merged = { ...currentData, ...templateData };
+  if (currentData.provider) merged.provider = currentData.provider;
+  if (currentData.model) merged.model = currentData.model;
+
+  fs.writeFileSync(configFile, JSON.stringify(merged, null, 2));
+
+  console.log("✅ Sucesso: Instalação do OpenCode concluída.");
 }
-
-const merged = { ...currentData, ...templateData };
-if (currentData.provider) merged.provider = currentData.provider;
-if (currentData.model) merged.model = currentData.model;
-
-fs.writeFileSync(configFile, JSON.stringify(merged, null, 2));
 
 console.log("");
-console.log("✅ Instalação concluída com sucesso!");
-console.log("Abra uma nova sessão do OpenCode e aproveite sua Software House autônoma.");
+console.log("🎉 Instalação concluída!");
+console.log("Abra uma nova sessão do OpenCode ou Claude Code e aproveite sua Software House autônoma.");
 console.log("");

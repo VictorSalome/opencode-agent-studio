@@ -1,8 +1,10 @@
 {
   "name": "opencode-agent-studio",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "OpenCode Agent Studio installer",
-  "bin": "./install.js",
+  "bin": {
+    "opencode-agent-studio": "./install.js"
+  },
   "scripts": {
     "start": "node install.js"
   }
