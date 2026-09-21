@@ -62,11 +62,11 @@ if (shouldInstallOpenCode) {
 
   console.log("📦 1/3: Instalando plugin de orquestração @beremaran/opencode-agent-tree...");
   if (commandExists('opencode')) {
-    runCmd('opencode plugin add github:beremaran/opencode-agent-tree');
+    runCmd('opencode plugin github:beremaran/opencode-agent-tree');
   } else {
     const localOpencode = path.join(homeDir, '.opencode', 'bin', 'opencode' + (process.platform === 'win32' ? '.cmd' : ''));
     if (fs.existsSync(localOpencode)) {
-      runCmd(`"${localOpencode}" plugin add github:beremaran/opencode-agent-tree`);
+      runCmd(`"${localOpencode}" plugin github:beremaran/opencode-agent-tree`);
     }
   }
 
