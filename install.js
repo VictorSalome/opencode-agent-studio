@@ -113,6 +113,23 @@ if (shouldInstallOpenCode) {
   if (currentData.provider) merged.provider = currentData.provider;
   if (currentData.model) merged.model = currentData.model;
 
+  const globalModel = merged.model;
+  if (globalModel) {
+    if (merged.agent) {
+      for (const agentName in merged.agent) {
+        merged.agent[agentName].model = globalModel;
+      }
+    }
+    if (merged.plugins) {
+      for (const plugin of merged.plugins) {
+        if (plugin.package === 'github:beremaran/opencode-agent-tree' && plugin.options) {
+          plugin.options.subagentModel = globalModel;
+          plugin.options.orchestratorModel = globalModel;
+        }
+      }
+    }
+  }
+
   fs.writeFileSync(configFile, JSON.stringify(merged, null, 2));
 
   console.log("✅ Sucesso: Instalação do OpenCode concluída.");
