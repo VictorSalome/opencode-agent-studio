@@ -17,6 +17,7 @@ const shouldInstallClaude = args.includes('--claude');
 const shouldInstallOpenCode = args.includes('--opencode') || args.length === 0;
 
 const homeDir = os.homedir();
+const isWindows = process.platform === 'win32';
 
 function runCmd(cmd) {
   try {
@@ -29,11 +30,20 @@ function runCmd(cmd) {
 
 function commandExists(cmd) {
   try {
-    execSync(process.platform === 'win32' ? `where ${cmd}` : `command -v ${cmd}`, { stdio: 'ignore' });
+    execSync(isWindows ? `where ${cmd}` : `command -v ${cmd}`, { stdio: 'ignore' });
     return true;
   } catch (e) {
     return false;
   }
+}
+
+// Resolução multiplataforma do diretório de configuração do OpenCode
+function getOpenCodeConfigDir() {
+  if (isWindows && process.env.APPDATA) {
+    const winPath = path.join(process.env.APPDATA, 'opencode');
+    if (fs.existsSync(winPath)) return winPath;
+  }
+  return path.join(homeDir, '.config', 'opencode');
 }
 
 if (shouldInstallClaude) {
@@ -54,7 +64,7 @@ if (shouldInstallClaude) {
 
 if (shouldInstallOpenCode) {
   console.log("🤖 Configurando OpenCode...");
-  const configDir = path.join(homeDir, '.config', 'opencode');
+  const configDir = getOpenCodeConfigDir();
   const configFile = path.join(configDir, 'opencode.json');
   const backupFile = path.join(configDir, `opencode.json.backup.${Math.floor(Date.now() / 1000)}`);
 
@@ -64,15 +74,14 @@ if (shouldInstallOpenCode) {
   if (commandExists('opencode')) {
     runCmd('opencode plugin github:beremaran/opencode-agent-tree');
   } else {
-    const localOpencode = path.join(homeDir, '.opencode', 'bin', 'opencode' + (process.platform === 'win32' ? '.cmd' : ''));
+    const localOpencode = path.join(homeDir, '.opencode', 'bin', 'opencode' + (isWindows ? '.cmd' : ''));
     if (fs.existsSync(localOpencode)) {
       runCmd(`"${localOpencode}" plugin github:beremaran/opencode-agent-tree`);
     }
   }
 
-  console.log("🌟 2/3: Instalando skills oficiais do ranking mundial...");
+  console.log("🌟 2/3: Instalando skills recomendadas do ecossistema...");
   if (commandExists('npx')) {
-    console.log("   -> Instalando frontend-design, vercel-react-best-practices, web-design-guidelines, code-review...");
     const skills = [
       'anthropics/skills@frontend-design',
       'vercel-labs/agent-skills@vercel-react-best-practices',
@@ -83,16 +92,17 @@ if (shouldInstallOpenCode) {
     ];
     
     for (const skill of skills) {
-      runCmd(`npx skills add ${skill} -g -y`);
+      console.log(`   -> npx skills add ${skill}...`);
+      runCmd(`npx -y skills add ${skill} -g -y`);
     }
   }
 
-  console.log("⚙️  3/3: Configurando agentes e esteira de Quality Gate...");
+  console.log("⚙️  3/3: Configurando agentes, permissões reais (Default Deny) e Quality Gate...");
   const templateFile = path.join(__dirname, 'config', 'opencode.json.template');
 
   if (fs.existsSync(configFile)) {
     fs.copyFileSync(configFile, backupFile);
-    console.log(`   (Backup da sua configuração salvo em: ${backupFile})`);
+    console.log(`   (Backup da sua configuração atual salvo em: ${backupFile})`);
   }
 
   let templateData = {};
@@ -100,24 +110,33 @@ if (shouldInstallOpenCode) {
     if (fs.existsSync(templateFile)) {
       templateData = JSON.parse(fs.readFileSync(templateFile, 'utf8'));
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error("Erro ao ler template:", e.message);
+  }
 
   let currentData = {};
   if (fs.existsSync(configFile)) {
     try {
       currentData = JSON.parse(fs.readFileSync(configFile, 'utf8'));
-    } catch (e) {}
+    } catch (e) {
+      console.error("Erro ao ler configuração atual:", e.message);
+    }
   }
 
+  // Fusão não destrutiva: preserva provedores, chaves, MCPs e modelos do usuário
   const merged = { ...currentData, ...templateData };
   if (currentData.provider) merged.provider = currentData.provider;
   if (currentData.model) merged.model = currentData.model;
+  if (currentData.mcp) merged.mcp = currentData.mcp;
 
+  // Garante sincronização de modelos entre subagentes e orquestrador
   const globalModel = merged.model;
   if (globalModel) {
     if (merged.agent) {
       for (const agentName in merged.agent) {
-        merged.agent[agentName].model = globalModel;
+        if (!merged.agent[agentName].model) {
+          merged.agent[agentName].model = globalModel;
+        }
       }
     }
     if (merged.plugins) {
@@ -130,12 +149,14 @@ if (shouldInstallOpenCode) {
     }
   }
 
-  fs.writeFileSync(configFile, JSON.stringify(merged, null, 2));
+  fs.writeFileSync(configFile, JSON.stringify(merged, null, 2), 'utf8');
 
-  console.log("✅ Sucesso: Instalação do OpenCode concluída.");
+  console.log("✅ Sucesso: Configuração do OpenCode atualizada com sucesso!");
+  console.log(`   Destino: ${configFile}`);
 }
 
 console.log("");
-console.log("🎉 Instalação concluída!");
-console.log("Abra uma nova sessão do OpenCode ou Claude Code e aproveite sua Software House autônoma.");
+console.log("🎉 Instalação concluída com sucesso!");
+console.log("👉 Para começar, abra ou reinicie sua sessão do OpenCode:");
+console.log("   opencode");
 console.log("");

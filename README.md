@@ -1,6 +1,6 @@
 # OpenCode & Claude Code Agent Studio
 
-Transforme o seu OpenCode e Claude Code em uma Software House Autônoma Completa.
+Transforme o seu **OpenCode** e **Claude Code** em uma **Software House Autônoma Completa**, com governança estrita de ferramentas, controle de escopo (Scope Lock), máquina de estados e auditoria independente com nota de corte.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenCode](https://img.shields.io/badge/OpenCode-V2-blue)](https://opencode.ai)
@@ -9,117 +9,142 @@ Transforme o seu OpenCode e Claude Code em uma Software House Autônoma Completa
 
 ---
 
-## O Problema que este Blueprint Resolve
+## 🚀 Instalação Rápida (Via npx)
 
-Agentes de IA convencionais sofrem de três vícios graves:
-1. **Causam danos colaterais:** Você pede para alterar um botão e eles refatoram 10 arquivos aleatórios.
-2. **Gambiarras invisíveis:** Usam `any`, `@ts-ignore` e `eslint-disable` para mascarar erros de tipagem.
-3. **Falta de validação cega:** O mesmo agente que escreve o código se auto-avalia, diz que está tudo bem e entrega tarefas quebradas.
+Você pode instalar ou atualizar a arquitetura diretamente pelo terminal sem precisar clonar o repositório manualmente:
+
+### No OpenCode (Padrão):
+```bash
+npx opencode-agent-studio
+```
+
+### No Claude Code:
+```bash
+npx opencode-agent-studio --claude
+```
+
+### Em Ambos:
+```bash
+npx opencode-agent-studio --opencode --claude
+```
+
+> **Compatibilidade Total:** Funciona de forma transparente no **macOS**, **Linux** e **Windows** (PowerShell / CMD).  
+> **Preservação Segura:** O instalador faz backup automático da sua configuração existente e **preserva seus provedores, chaves de API e MCPs já configurados**.
 
 ---
 
-## A Solução (Suporte Duplo: OpenCode + Claude Code)
+## 🧠 Como a Arquitetura Funciona
 
-O **Agent Studio** utiliza o conceito de **Árvore de Agentes (Agent Tree)** para criar uma esteira hierárquica e sob demanda:
+Diferente de assistentes convencionais que tentam fazer tudo no mesmo prompt (gerando código incompleto, quebrando arquivos alheios ou usando `any`), o **Agent Studio** adota o modelo hierárquico com **Separação Rigorosa de Responsabilidades**:
+
+$$\text{Permissão Efetiva} = \text{CAPABILITY} \cap \text{SCOPE LOCK}$$
 
 ```text
-Você (Prompt simples, sem comandos especiais)
-  │
-  ▼
-[ MANAGER ] (Diretor)
-  │ Bloqueado de codar diretamente
-  │ Classifica a intenção no planejamento (PLAN)
-  │
-  ├─▶ [ designer ]   ── Telas React, Tailwind, Framer Motion (Anthropic & Vercel Guidelines)
-  ├─▶ [ architect ]  ── Backend, APIs REST, Banco, Bugs (Vercel Best Practices & RFC 7807)
-  ├─▶ [ tester ]     ── Testes ponta a ponta reais com Playwright no navegador
-  ├─▶ [ secops ]     ── Pentest ofensivo e varredura de OWASP Top 10
-  ├─▶ [ documenter ] ── Diagramas SVG interativos e documentação técnica
-  │
-  ▼
-[ REVIEWER ] (Auditor Cego / Quality Gate)
-  │ Avaliação em 2 eixos (Padrões Martin Fowler x Especificação do Usuário)
-  │ Veto Imediato: Se violar a Constituição Sênior -> FAIL
-  │
-  └─▶ Entrega ao Usuário SOMENTE com carimbo [ PASS ]
+                     [ VOCÊ ]
+                        │ (Conversa ativa e contínua em tempo real)
+                        ▼
+                ┌───────────────┐
+                │    MANAGER    │ (Orquestrador & Comunicador Humano)
+                └───────┬───────┘
+                        │ Despacha em background (background: true)
+                        ▼
+                ┌───────────────┐
+                │   ARCHITECT   │ (Tech Lead & Executor Central)
+                └───────┬───────┘
+      ┌─────────────────┼─────────────────┐
+      ▼                 ▼                 ▼
+┌───────────┐     ┌───────────┐     ┌───────────┐
+│ EXPLORER  │     │ DESIGNER  │     │  TESTER   │
+└───────────┘     └───────────┘     └───────────┘
+      ▼                 ▼                 ▼
+┌───────────┐     ┌───────────┐     ┌───────────┐
+│  SECOPS   │     │DOCUMENTER │     │ REVIEWER  │ (Quality Gate: Nota >= 9/10)
+└───────────┘     └───────────┘     └───────────┘
 ```
 
-### Como a Árvore Opera em Cada Plataforma
+---
 
-| Mecanismo | No OpenCode | No Claude Code |
-| :--- | :--- | :--- |
-| **Motor da Árvore** | Plugin `@beremaran/opencode-agent-tree` | Ferramenta nativa de subagentes `Agent` / `Task` |
-| **Bloqueio do Manager** | Físico (ferramentas `edit` e `bash` removidas do schema) | Governança estrita via diretiva `CLAUDE.md` |
-| **Execução dos Especialistas** | Subagentes dedicados (`orchestratorDepth: 1`) | Subagentes despachados em background |
-| **Quality Gate** | Resposta final bloqueada até `PASS` do Reviewer | Resposta final bloqueada até `PASS` do Reviewer |
+## 💬 Conversa Contínua com o Manager (Sem Travamentos)
+
+- O **Manager** é o seu parceiro direto. Ele **nunca fica em silêncio** e está sempre disponível para tirar dúvidas enquanto o projeto é construído.
+- **Delegação Não Bloqueante (`background: true`):** Todas as subtarefas pesadas rodam em segundo plano. Você pode continuar conversando, ajustando planos ou fazendo perguntas enquanto os especialistas trabalham.
 
 ---
 
-## A Equipe Especializada
+## 🛡️ Capability Matrix Real (Default Deny no Engine)
 
-| Agente | Função | Skills Oficiais Embutidas (Top Mundial) |
-| :--- | :--- | :--- |
-| **`Manager`** | Diretor / Orquestrador | `grill-me` (Matt Pocock #2 mundial) |
-| **`designer`** | UI/UX & Frontend | `frontend-design` (Anthropic #6), `web-design-guidelines` (Vercel #41), `ui-ux-pro-max`, `impeccable` |
-| **`architect`** | Backend & Fullstack | `vercel-react-best-practices` (Vercel #13), `api-designer`, `fullstack-guardian`, `diagnosing-bugs` (Matt Pocock) |
-| **`reviewer`** | **Quality Gate Mandatório** | `code-review` (Matt Pocock #63), `gauntlet-loop` |
-| **`tester`** | Testes E2E | `e2e-tester`, `webapp-testing`, `playwright-e2e-init` |
-| **`secops`** | Pentest & OWASP | `security-pentest`, `codeprobe-security`, `owasp-top-10` |
-| **`documenter`**| Arquitetura & SVG | `archify`, `docs`, `docx`, `pdf` |
+As permissões são bloqueadas fisicamente no motor do OpenCode (`permissions` no schema v2):
 
----
-
-## Constituição de Engenharia Sênior (5 Regras Invioláveis)
-
-Nenhum código é aprovado pelo `reviewer` se violar estas diretrizes:
-1. **Escopo Fechado:** Proibido tocar em arquivos fora da solicitação.
-2. **Zero Gambiarras:** Proibido `any`, `@ts-ignore` e `eslint-disable`.
-3. **Código 100% Funcional:** Zero stubs vazios ou comentários `// TODO`.
-4. **Zero Chaves Expostas:** Credenciais sempre via `.env`.
-5. **Zero Poluição de Dependências:** O agente trabalha com o que o projeto tem. Proibido `npm install` sem autorização explícita. Se o projeto não tem Jest/Vitest, a auditoria é feita via análise estática e tipagem estrita.
+| Agente | Nível | read / glob / grep | write / edit / patch | shell (CLI nativo) | subagent (task) | webfetch / search |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Manager** | L4 (Orquestração) | ALLOW | **DENY** | **DENY** | ALLOW | ALLOW |
+| **Explorer** | L1 (Read-Only) | ALLOW | **DENY** | **DENY** | **DENY** | **DENY** |
+| **Architect** | L4 (Tech Lead) | ALLOW | ALLOW (no escopo) | ALLOW (CLI nativo) | **DENY** | ALLOW |
+| **Designer** | L3 (UI Only) | ALLOW | ALLOW (UI components)| **DENY** | **DENY** | **DENY** |
+| **Tester** | L3 (Tests Only) | ALLOW | ALLOW (`*.test.*`) | ALLOW (npm test/E2E)| **DENY** | **DENY** |
+| **SecOps** | L2 (Audit) | ALLOW | **DENY** | ALLOW (curl/scans) | **DENY** | **DENY** |
+| **Documenter** | L3 (Docs Only) | ALLOW | ALLOW (`*.md`, `*.svg`)| **DENY** | **DENY** | **DENY** |
+| **Reviewer** | L1/L2 (Auditor) | ALLOW | **DENY** | ALLOW (git diff only)| **DENY** | **DENY** |
 
 ---
 
-## Instalação Rápida
+## 🔄 Máquina Formal de Estados (State Machine)
 
-```bash
-# Para OpenCode
-npx opencode-agent-studio@latest --opencode
+Toda tarefa transita estritamente pelo pipeline de governança:
 
-# Para Claude Code
-npx opencode-agent-studio@latest --claude
+1. **`PLANNED`**: Explorer mapeia a estrutura e Architect define a estratégia e o contrato de **Scope Lock**.
+2. **`IMPLEMENTING`**: Designer (UI) e Architect (API/DB) criam o código estritamente dentro dos arquivos permitidos.
+3. **`VERIFYING`**: Tester valida portas/testes automatizados e SecOps audita a superfície de segurança.
+4. **`REVIEWING`**: Reviewer independente realiza auditoria cega dos padrões e do escopo.
+5. **`PASS`**: Conclusão liberada SOMENTE se `STATUS = PASS` e `SCORE >= 9.0/10.0`.
+
+---
+
+## ⚖️ Quality Gate Implacável (10 Vetos Automáticos)
+
+O **Reviewer** é completamente cego, independente e não possui permissão de escrita (não pode "ajeitar" código). Ele emite a nota em 7 dimensões:
+
+```text
+==================================================
+QUALITY GATE REPORT
+==================================================
+1. Scope Lock Compliance: [PASS / FAIL] (Peso 2.0)
+2. Type Safety & Strict:  [PASS / FAIL] (Peso 1.5)
+3. Tests & Assertions:    [PASS / FAIL] (Peso 1.5)
+4. Regression Prevention: [PASS / FAIL] (Peso 1.5)
+5. Security & OWASP:      [PASS / FAIL] (Peso 1.5)
+6. Architecture & Clean:  [PASS / FAIL] (Peso 1.0)
+7. Code Quality & Idiom:  [PASS / FAIL] (Peso 1.0)
+--------------------------------------------------
+SCORE: [X.X] / 10.0
+STATUS: [PASS / FAIL]
+BLOCKING ISSUES: <detalhes ou nenhum>
+==================================================
 ```
 
-### Configurando seu Modelo de IA (Para usuários OpenCode)
-
-O instalador detecta automaticamente o modelo configurado no seu OpenCode (ex: `openai/gpt-4o` ou `9router/freecode`) e o propaga para todos os subagentes. Caso precise alterar o modelo no futuro, basta mudá-lo na interface de Configurações (Settings) do OpenCode e rodar o comando `npx` de instalação novamente para sincronizar a equipe.
-
----
-
-## Como Usar
-
-Basta abrir o seu **OpenCode** ou **Claude Code** e digitar qualquer necessidade de negócio em linguagem natural:
-
-- *"Crie uma tela de Login moderna com Tailwind e validação com Zod."*  
-  -> O Manager aciona o **`designer`** e valida com o **`reviewer`**.
-- *"Crie o endpoint POST /api/tickets salvando no banco de dados."*  
-  -> O Manager aciona o **`architect`** e valida com o **`reviewer`**.
-- *"Verifique se temos vulnerabilidades de injeção no endpoint de login."*  
-  -> O Manager aciona o **`secops`** e valida com o **`reviewer`**.
+### Vetos que geram FAIL Imediato (SCORE = 0):
+1. Presença de `any`.
+2. Presença de `// @ts-ignore` ou `// @ts-expect-error`.
+3. Presença de `/* eslint-disable */`.
+4. Arquivo alterado fora do `ALLOWED_FILES` do Scope Lock.
+5. Inclusão de comentários `// TODO` ou código pela metade.
+6. Mocks em código de produção ou stubs não implementados.
+7. Credenciais, senhas ou tokens expostos.
+8. Dependências adicionadas sem autorização prévia.
+9. Testes anteriores apagados ou enfraquecidos.
+10. Scripts Python para tarefas de CLI quando ferramentas nativas de terminal eram aplicáveis.
 
 ---
 
-## Créditos e Agradecimentos
+## 💻 Comandos Nativos de Terminal (Bash Puro)
 
-- **Motor de Orquestração OpenCode:** Desenvolvido graças ao plugin oficial [`@beremaran/opencode-agent-tree`](https://github.com/beremaran/opencode-agent-tree).
-- **Skills de Classe Mundial:**
-  - [Matt Pocock](https://github.com/mattpocock/skills) (`code-review`, `diagnosing-bugs`, `grill-me`).
-  - [Anthropic](https://github.com/anthropics/skills) (`frontend-design`).
-  - [Vercel](https://github.com/vercel-labs/agent-skills) (`vercel-react-best-practices`, `web-design-guidelines`).
-  - [pbakaus](https://github.com/pbakaus/impeccable) (`impeccable`).
+Os agentes são estritamente instruídos a utilizar os utilitários nativos de CLI:
+- **SQLite:** `sqlite3 <banco.db> ".tables"`, `sqlite3 <banco.db> ".schema"`
+- **Arquivos & Disco:** `ls -lh`, `du -sh`, `find`, `file`
+- **Logs & Processos:** `grep`, `tail -n`, `lsof`, `ps aux`
 
 ---
 
-## Licença
+## 📄 Licença
 
-Distribuído sob a licença MIT. Veja `LICENSE` para mais detalhes.
+Distribuído sob a licença MIT. Consulte `LICENSE` para mais informações.
