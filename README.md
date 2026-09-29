@@ -1,35 +1,45 @@
-# OpenCode & Claude Code Agent Studio
+# OpenCode & Claude Code Agent Studio (v1.1.0)
 
-Transforme o seu **OpenCode** e **Claude Code** em uma **Software House Autônoma Completa**, com governança estrita de ferramentas, controle de escopo (Scope Lock), máquina de estados e auditoria independente com nota de corte.
+Transforme o seu **OpenCode** e **Claude Code** em uma **Software House Autônoma Completa**, com governança estrita de ferramentas, controle de escopo (Scope Lock), hooks determinísticos de delegação, testes visuais no navegador via MCP e auditoria independente com nota de corte.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenCode](https://img.shields.io/badge/OpenCode-V2-blue)](https://opencode.ai)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Supported-purple)](https://claude.ai)
-[![Plugin](https://img.shields.io/badge/Powered%20By-%40beremaran%2Fopencode--agent--tree-purple)](https://github.com/beremaran/opencode-agent-tree)
+[![Copilot CLI](https://img.shields.io/badge/Copilot%20CLI-Synergy-black)](https://github.com/github/gh-copilot)
 
 ---
 
 ## 🚀 Instalação Rápida (Via npx)
 
-Você pode instalar ou atualizar a arquitetura diretamente pelo terminal sem precisar clonar o repositório manualmente:
+Instale ou atualize a arquitetura diretamente pelo terminal sem precisar clonar o repositório manualmente:
 
 ### No OpenCode (Padrão):
 ```bash
 npx opencode-agent-studio
 ```
 
-### No Claude Code:
+### No Claude Code (Oficial ou claude-or):
 ```bash
 npx opencode-agent-studio --claude
 ```
 
-### Em Ambos:
+### Em Todos (OpenCode + Claude Code):
 ```bash
-npx opencode-agent-studio --opencode --claude
+npx opencode-agent-studio --all
 ```
 
-> **Compatibilidade Total:** Funciona de forma transparente no **macOS**, **Linux** e **Windows** (PowerShell / CMD).  
+> **Compatibilidade Total:** Funciona de forma transparente no **macOS**, **Linux** e **Windows**.  
 > **Preservação Segura:** O instalador faz backup automático da sua configuração existente e **preserva seus provedores, chaves de API e MCPs já configurados**.
+
+---
+
+## 🏛️ O Ecossistema Tri-CLI (Sinergia de Terminal)
+
+| CLI | Papel Estratégico | Nível de Atuação |
+| :--- | :--- | :--- |
+| **Claude Code (`claude-or`)** | Motor principal de engenharia autônoma em árvore, subagentes com modelos de time (`team-*`), testes com Puppeteer MCP e hooks de bloqueio. | Arquitetura, features fullstack, UI anti-slop e refatorações complexas. |
+| **OpenCode** | Roteamento multi-provedor (9Router, local, OpenAI, Anthropic) com Default Deny físico no engine e governança estrita de permissões. | Ambientes corporativos, restrição física de tools e otimização de custos. |
+| **GitHub Copilot CLI** | Assistente ágil de terminal para comandos Git, shell helpers, abertura de PRs e inspeção de CI. | Comandos Git pontuais, automação rápida e fechamento de PRs. Consulte [docs/COPILOT_CLI.md](./docs/COPILOT_CLI.md). |
 
 ---
 
@@ -41,110 +51,91 @@ $$\text{Permissão Efetiva} = \text{CAPABILITY} \cap \text{SCOPE LOCK}$$
 
 ```text
                      [ VOCÊ ]
-                        │ (Conversa ativa e contínua em tempo real)
+                        │ (Entrevista Grill-Me em 5 Estágios)
                         ▼
                 ┌───────────────┐
-                │    MANAGER    │ (Orquestrador & Comunicador Humano)
+                │    MANAGER    │ (Orquestrador - team-heavy)
                 └───────┬───────┘
-                        │ Despacha em background (background: true)
+                        │ Despacha em background (Hook bloqueia escrita direta)
                         ▼
                 ┌───────────────┐
-                │   ARCHITECT   │ (Tech Lead & Executor Central)
+                │   ARCHITECT   │ (Tech Lead Fullstack - team-builder)
                 └───────┬───────┘
       ┌─────────────────┼─────────────────┐
       ▼                 ▼                 ▼
 ┌───────────┐     ┌───────────┐     ┌───────────┐
-│ EXPLORER  │     │ DESIGNER  │     │  TESTER   │
+│ EXPLORER  │     │ DESIGNER  │     │  TESTER   │ (Puppeteer MCP)
 └───────────┘     └───────────┘     └───────────┘
       ▼                 ▼                 ▼
 ┌───────────┐     ┌───────────┐     ┌───────────┐
-│  SECOPS   │     │DOCUMENTER │     │ REVIEWER  │ (Quality Gate: Nota >= 9/10)
+│  SECOPS   │     │DOCUMENTER │     │ REVIEWER  │ (Evidence-Gated Audit)
 └───────────┘     └───────────┘     └───────────┘
 ```
 
 ---
 
-## 💬 Conversa Contínua com o Manager (Sem Travamentos)
+## 🛡️ Hooks Determinísticos de Governança (Claude Code)
 
-- O **Manager** é o seu parceiro direto. Ele **nunca fica em silêncio** e está sempre disponível para tirar dúvidas enquanto o projeto é construído.
-- **Delegação Não Bloqueante (`background: true`):** Todas as subtarefas pesadas rodam em segundo plano. Você pode continuar conversando, ajustando planos ou fazendo perguntas enquanto os especialistas trabalham.
+Instalados automaticamente em `~/.claude/hooks/` (ou `~/.claude-or/hooks/`):
 
----
+1. **`PreToolUse` (Enforce Agent Delegation):**
+   * Bloqueia fisicamente as ferramentas `Write` e `Edit` na sessão raiz do Orquestrador para qualquer arquivo de código.
+   * Obriga o Orquestrador a delegar o trabalho para a equipe de subagentes especializados, mantendo o contexto limpo.
 
-## 🛡️ Capability Matrix Real (Default Deny no Engine)
-
-As permissões são bloqueadas fisicamente no motor do OpenCode (`permissions` no schema v2):
-
-| Agente | Nível | read / glob / grep | write / edit / patch | shell (CLI nativo) | subagent (task) | webfetch / search |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Manager** | L4 (Orquestração) | ALLOW | **DENY** | **DENY** | ALLOW | ALLOW |
-| **Explorer** | L1 (Read-Only) | ALLOW | **DENY** | **DENY** | **DENY** | **DENY** |
-| **Architect** | L4 (Tech Lead) | ALLOW | ALLOW (no escopo) | ALLOW (CLI nativo) | **DENY** | ALLOW |
-| **Designer** | L3 (UI Only) | ALLOW | ALLOW (UI components)| **DENY** | **DENY** | **DENY** |
-| **Tester** | L3 (Tests Only) | ALLOW | ALLOW (`*.test.*`) | ALLOW (npm test/E2E)| **DENY** | **DENY** |
-| **SecOps** | L2 (Audit) | ALLOW | **DENY** | ALLOW (curl/scans) | **DENY** | **DENY** |
-| **Documenter** | L3 (Docs Only) | ALLOW | ALLOW (`*.md`, `*.svg`)| **DENY** | **DENY** | **DENY** |
-| **Reviewer** | L1/L2 (Auditor) | ALLOW | **DENY** | ALLOW (git diff only)| **DENY** | **DENY** |
+2. **`PostToolUse` (Auto-Format com Prettier):**
+   * Executa formatação automática e silenciosa (<50ms) após cada edição de arquivo.
+   * Evita discussões sobre estilo e economiza tokens na revisão.
 
 ---
 
-## 🔄 Máquina Formal de Estados (State Machine)
+## 📋 Protocolo Grill-Me em 5 Estágios Formais
 
-Toda tarefa transita estritamente pelo pipeline de governança:
+Antes de qualquer linha de código ser escrita em demandas abertas:
 
-1. **`PLANNED`**: Explorer mapeia a estrutura e Architect define a estratégia e o contrato de **Scope Lock**.
-2. **`IMPLEMENTING`**: Designer (UI) e Architect (API/DB) criam o código estritamente dentro dos arquivos permitidos.
-3. **`VERIFYING`**: Tester valida portas/testes automatizados e SecOps audita a superfície de segurança.
-4. **`REVIEWING`**: Reviewer independente realiza auditoria cega dos padrões e do escopo.
-5. **`PASS`**: Conclusão liberada SOMENTE se `STATUS = PASS` e `SCORE >= 9.0/10.0`.
-
----
-
-## ⚖️ Quality Gate Implacável (10 Vetos Automáticos)
-
-O **Reviewer** é completamente cego, independente e não possui permissão de escrita (não pode "ajeitar" código). Ele emite a nota em 7 dimensões:
-
-```text
-==================================================
-QUALITY GATE REPORT
-==================================================
-1. Scope Lock Compliance: [PASS / FAIL] (Peso 2.0)
-2. Type Safety & Strict:  [PASS / FAIL] (Peso 1.5)
-3. Tests & Assertions:    [PASS / FAIL] (Peso 1.5)
-4. Regression Prevention: [PASS / FAIL] (Peso 1.5)
-5. Security & OWASP:      [PASS / FAIL] (Peso 1.5)
-6. Architecture & Clean:  [PASS / FAIL] (Peso 1.0)
-7. Code Quality & Idiom:  [PASS / FAIL] (Peso 1.0)
---------------------------------------------------
-SCORE: [X.X] / 10.0
-STATUS: [PASS / FAIL]
-BLOCKING ISSUES: <detalhes ou nenhum>
-==================================================
-```
-
-### Vetos que geram FAIL Imediato (SCORE = 0):
-1. Presença de `any`.
-2. Presença de `// @ts-ignore` ou `// @ts-expect-error`.
-3. Presença de `/* eslint-disable */`.
-4. Arquivo alterado fora do `ALLOWED_FILES` do Scope Lock.
-5. Inclusão de comentários `// TODO` ou código pela metade.
-6. Mocks em código de produção ou stubs não implementados.
-7. Credenciais, senhas ou tokens expostos.
-8. Dependências adicionadas sem autorização prévia.
-9. Testes anteriores apagados ou enfraquecidos.
-10. Scripts Python para tarefas de CLI quando ferramentas nativas de terminal eram aplicáveis.
+1. **Estágio 1 (Explore First):** Mineração autônoma de arquivos e schemas existentes antes de perguntar ao usuário.
+2. **Estágio 2 (Árvore de Decisão):** Mapeamento em 4 ramos (Escopo, Arquitetura, Bordas/Falhas, Segurança).
+3. **Estágio 3 (Rodadas na Fronteira):** Interrogatório ativo via tool `question`, onde toda pergunta obrigatoriamente inclui uma opção **(Recomendado)** fundamentada.
+4. **Estágio 4 (Aprofundamento):** Eliminação de respostas vagas e fixação de contratos padrão.
+5. **Estágio 5 (Síntese & Scope Lock):** Emissão de relatório de decisões travadas e disparo da equipe apenas após o alinhamento.
 
 ---
 
-## 💻 Comandos Nativos de Terminal (Bash Puro)
+## 🎨 As 7 Leis Anti-Slop de Design Visual
 
-Os agentes são estritamente instruídos a utilizar os utilitários nativos de CLI:
-- **SQLite:** `sqlite3 <banco.db> ".tables"`, `sqlite3 <banco.db> ".schema"`
-- **Arquivos & Disco:** `ls -lh`, `du -sh`, `find`, `file`
-- **Logs & Processos:** `grep`, `tail -n`, `lsof`, `ps aux`
+1. **Tipografia com Identidade:** Proibido system fonts puras. Google Fonts no `<head>` (Syne, Plus Jakarta Sans, Space Grotesk). Títulos com tracking negativo (`-0.02em` a `-0.04em`).
+2. **Double-Bezel:** Cards com moldura dupla (container externo sutil + container interno tátil).
+3. **Bento Grid Assimétrico:** Proibido 3 cards simétricos idênticos. Hierarquia visual com Hero de 2 colunas.
+4. **Paleta Orgânica Profunda:** Fundos ultra-dark (#050505 a #0D0D0D) ou Creme Clássico (#FBF9F5). Zero glow roxo genérico.
+5. **Física de Movimento Real:** Animações inerciais com `cubic-bezier(0.16, 1, 0.3, 1)` ou GSAP timelines.
+6. **Ergonomia Mobile:** Targets de toque de no mínimo 44px e `touch-action: manipulation`.
+7. **Acessibilidade:** Regra obrigatória `@media (prefers-reduced-motion: reduce)`.
+
+---
+
+## 🔍 Evidence-Gated Audit & Memória Contínua
+
+* **Proibido Auto-Relato:** O `reviewer` nunca aceita mensagens verbais de "está pronto". O veredito `PASS` exige prova factual (código de saída zero de testes/build, print visual do Puppeteer salvo em disco ou `git diff` limpo).
+* **Registro de Armadilhas (`pitfalls.md`):** Todo bug corrigido gera um registro de 3 linhas (Problema, Causa e Regra Preventiva). Agentes consultam esse arquivo no início da sessão para evitar regressões.
+* **Isolamento com Git Worktrees:** Subagentes concorrentes utilizam `isolation: "worktree"` para trabalhar em cópias temporárias sem gerar conflitos de merge.
+
+---
+
+## 👥 Matriz de Subagentes Nativos
+
+| Subagente | Modelo Sugerido | Ferramentas | Missão Principal |
+| :--- | :--- | :--- | :--- |
+| **`architect`** | `team-builder` | `Read, Glob, Grep, Edit, Write, Bash, Agent, Skill` | Arquitetura, modelagem de banco, APIs e coordenação. |
+| **`designer`** | `team-heavy` | `Read, Glob, Grep, Edit, Write, Bash, Agent, Skill, mcp__puppeteer__*` | UI/UX de alta fidelidade, animações e regras Anti-Slop. |
+| **`reviewer`** | `team-builder` | `Read, Glob, Grep, Bash, Agent, Skill` | Auditoria independente, quality gate e emissão de PASS/FAIL. |
+| **`tester`** | `team-worker` | `Read, Glob, Grep, Edit, Write, Bash, Skill, mcp__puppeteer__*` | QA, testes automatizados e testes visuais no navegador real. |
+| **`investigator`**| `team-heavy` | `Read, Glob, Grep, Bash, Agent, Skill` | Diagnóstico de causa-raiz com prova factual antes de editar código. |
+| **`secops`** | `team-heavy` | `Read, Glob, Grep, Bash, Skill` | Segurança ofensiva, OWASP Top 10 e auditoria de vulnerabilidades. |
+| **`documenter`** | `team-worker` | `Read, Glob, Grep, Edit, Write, Skill` | Documentação técnica, diagramas Mermaid/SVG e specs OpenAPI. |
+| **`explorer`** | `team-fast` | `Read, Glob, Grep` | Mapeamento read-only de repositórios e inventário de código. |
+| **`analyst`** | `team-fast` | `Read, Glob, Grep, Agent, Skill` | Condução do interrogatório dos 5 estágios do Grill-Me. |
 
 ---
 
 ## 📄 Licença
 
-Distribuído sob a licença MIT. Consulte `LICENSE` para mais informações.
+Distribuído sob licença MIT. Consulte [LICENSE](./LICENSE) para mais detalhes.

@@ -7,14 +7,15 @@ const { execSync } = require('child_process');
 
 console.log("");
 console.log("🚀 ===================================================");
-console.log("   OpenCode Agent Studio - Instalador Automatizado");
-console.log("   Powered by @beremaran/opencode-agent-tree");
+console.log("   OpenCode & Claude Code Agent Studio - v1.1.0");
+console.log("   Multi-Agent Architecture, Governance & Anti-Slop");
 console.log("======================================================");
 console.log("");
 
 const args = process.argv.slice(2);
-const shouldInstallClaude = args.includes('--claude');
-const shouldInstallOpenCode = args.includes('--opencode') || args.length === 0;
+const shouldInstallClaude = args.includes('--claude') || args.includes('--all');
+const shouldInstallClaudeOr = args.includes('--claude-or') || args.includes('--all');
+const shouldInstallOpenCode = args.includes('--opencode') || args.includes('--all') || (!shouldInstallClaude && !shouldInstallClaudeOr);
 
 const homeDir = os.homedir();
 const isWindows = process.platform === 'win32';
@@ -37,6 +38,108 @@ function commandExists(cmd) {
   }
 }
 
+function copyDirRecursive(src, dest) {
+  if (!fs.existsSync(src)) return;
+  fs.mkdirSync(dest, { recursive: true });
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      copyDirRecursive(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+      if (entry.name.endsWith('.js') || entry.name.endsWith('.sh')) {
+        try { fs.chmodSync(destPath, 0o755); } catch {}
+      }
+    }
+  }
+}
+
+function configureClaudeDirectory(targetDir, name) {
+  console.log(`🤖 Configurando ${name} (${targetDir})...`);
+  fs.mkdirSync(targetDir, { recursive: true });
+
+  // 1. CLAUDE.md
+  const claudeTemplateFile = path.join(__dirname, 'config', 'CLAUDE.md.template');
+  const claudeConfigFile = path.join(targetDir, 'CLAUDE.md');
+  if (fs.existsSync(claudeTemplateFile)) {
+    fs.copyFileSync(claudeTemplateFile, claudeConfigFile);
+    console.log(`   ✅ CLAUDE.md instalado.`);
+  }
+
+  // 2. Agents
+  const agentsSrc = path.join(__dirname, 'agents');
+  const agentsDest = path.join(targetDir, 'agents');
+  if (fs.existsSync(agentsSrc)) {
+    copyDirRecursive(agentsSrc, agentsDest);
+    console.log(`   ✅ Subagentes instalados em agents/`);
+  }
+
+  // 3. Hooks
+  const hooksSrc = path.join(__dirname, 'hooks');
+  const hooksDest = path.join(targetDir, 'hooks');
+  if (fs.existsSync(hooksSrc)) {
+    copyDirRecursive(hooksSrc, hooksDest);
+    console.log(`   ✅ Hooks de governança instalados em hooks/`);
+  }
+
+  // 4. Settings.json hooks merge
+  const settingsFile = path.join(targetDir, 'settings.json');
+  let settings = {};
+  if (fs.existsSync(settingsFile)) {
+    try {
+      settings = JSON.parse(fs.readFileSync(settingsFile, 'utf8'));
+    } catch {}
+  }
+
+  settings.hooks = settings.hooks || {};
+  const delegationScript = path.join(hooksDest, 'enforce-agent-delegation.js');
+  const formatScript = path.join(hooksDest, 'auto-format.js');
+
+  settings.hooks.PreToolUse = [
+    {
+      matcher: "Write",
+      hooks: [{ type: "command", command: `node "${delegationScript}"` }]
+    },
+    {
+      matcher: "Edit",
+      hooks: [{ type: "command", command: `node "${delegationScript}"` }]
+    }
+  ];
+
+  settings.hooks.PostToolUse = [
+    {
+      matcher: "Write",
+      hooks: [{ type: "command", command: `node "${formatScript}"` }]
+    },
+    {
+      matcher: "Edit",
+      hooks: [{ type: "command", command: `node "${formatScript}"` }]
+    }
+  ];
+
+  settings.permissions = settings.permissions || {};
+  settings.permissions.allow = settings.permissions.allow || [];
+  const requiredPermissions = ["mcp__puppeteer__*", "mcp__github__*"];
+  for (const perm of requiredPermissions) {
+    if (!settings.permissions.allow.includes(perm)) {
+      settings.permissions.allow.push(perm);
+    }
+  }
+
+  fs.writeFileSync(settingsFile, JSON.stringify(settings, null, 2), 'utf8');
+  console.log(`   ✅ settings.json configurado com hooks e permissões MCP.`);
+}
+
+if (shouldInstallClaude) {
+  configureClaudeDirectory(path.join(homeDir, '.claude'), 'Claude Code Oficial');
+}
+
+if (shouldInstallClaudeOr || (fs.existsSync(path.join(homeDir, '.claude-or')) && shouldInstallClaude)) {
+  configureClaudeDirectory(path.join(homeDir, '.claude-or'), 'Claude Code 9Router (claude-or)');
+}
+
 // Resolução multiplataforma do diretório de configuração do OpenCode
 function getOpenCodeConfigDir() {
   if (isWindows && process.env.APPDATA) {
@@ -44,22 +147,6 @@ function getOpenCodeConfigDir() {
     if (fs.existsSync(winPath)) return winPath;
   }
   return path.join(homeDir, '.config', 'opencode');
-}
-
-if (shouldInstallClaude) {
-  console.log("🤖 Configurando Claude Code...");
-  const claudeDir = path.join(homeDir, '.claude');
-  const claudeTemplateFile = path.join(__dirname, 'config', 'CLAUDE.md.template');
-  const claudeConfigFile = path.join(claudeDir, 'CLAUDE.md');
-
-  fs.mkdirSync(claudeDir, { recursive: true });
-
-  if (fs.existsSync(claudeTemplateFile)) {
-    fs.copyFileSync(claudeTemplateFile, claudeConfigFile);
-    console.log(`✅ Sucesso: ${claudeConfigFile} criado com as diretrizes do Agent Studio.`);
-  } else {
-    console.log(`⚠️ Aviso: Template ${claudeTemplateFile} não encontrado.`);
-  }
 }
 
 if (shouldInstallOpenCode) {
@@ -129,7 +216,7 @@ if (shouldInstallOpenCode) {
   if (currentData.model) merged.model = currentData.model;
   if (currentData.mcp) merged.mcp = currentData.mcp;
 
-  // Garante sincronização de modelos entre subagentes e orquestrador
+  // Garante sincronização de modelos entre subagentes e orquestrador se não definidos
   const globalModel = merged.model;
   if (globalModel) {
     if (merged.agent) {
@@ -157,6 +244,8 @@ if (shouldInstallOpenCode) {
 
 console.log("");
 console.log("🎉 Instalação concluída com sucesso!");
-console.log("👉 Para começar, abra ou reinicie sua sessão do OpenCode:");
-console.log("   opencode");
+console.log("👉 Para começar:");
+console.log("   OpenCode:   opencode");
+console.log("   Claude-OR:  claude-or");
+console.log("   Copilot:    gh copilot --help");
 console.log("");

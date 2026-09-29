@@ -1,7 +1,7 @@
 {
   "name": "opencode-agent-studio",
-  "version": "1.0.7",
-  "description": "OpenCode Agent Studio installer",
+  "version": "1.1.0",
+  "description": "OpenCode & Claude Code Agent Studio installer with multi-agent governance, hooks and anti-slop",
   "bin": {
     "opencode-agent-studio": "./install.js"
   },
