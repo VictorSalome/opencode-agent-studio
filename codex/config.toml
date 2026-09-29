@@ -1,0 +1,31 @@
+model = "freecode"
+model_provider = "9router"
+
+[tui]
+screen_reader_detection_done = true
+theme = "ada"
+
+[projects."/Users/victorsalome"]
+trust_level = "trusted"
+
+[projects."/Users/victorsalome/Desenvolvimento/codex"]
+trust_level = "trusted"
+
+[projects."/Users/victorsalome/aplication"]
+trust_level = "trusted"
+
+[model_providers.9router]
+name = "9Router"
+base_url = "http://127.0.0.1:20128/v1"
+wire_api = "responses"
+
+[model_providers.9router.http_headers]
+Authorization = "Bearer sk-6f30c8b06dc6eee8-zv4y2k-64af2432"
+
+[agents]
+default_subagent_model = "freecode"
+
+[features]
+multi_agent_v2 = true
+
+

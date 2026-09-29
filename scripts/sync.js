@@ -89,4 +89,20 @@ const studioPluginsDir = path.join(studioDir, 'plugins');
 const pluginsCount = copyDirRecursive(opencodePluginsDir, studioPluginsDir);
 console.log(`✅ Plugins OpenCode sincronizados (${pluginsCount} arquivos)`);
 
+// 7. Configurações Codex CLI
+const codexHome = path.join(homeDir, '.codex');
+const studioCodexDir = path.join(studioDir, 'codex');
+if (fs.existsSync(codexHome)) {
+  fs.mkdirSync(studioCodexDir, { recursive: true });
+  const codexAgents = path.join(codexHome, 'AGENTS.md');
+  const codexConfig = path.join(codexHome, 'config.toml');
+  if (fs.existsSync(codexAgents)) {
+    fs.copyFileSync(codexAgents, path.join(studioCodexDir, 'AGENTS.md'));
+  }
+  if (fs.existsSync(codexConfig)) {
+    fs.copyFileSync(codexConfig, path.join(studioCodexDir, 'config.toml'));
+  }
+  console.log(`✅ Configurações e AGENTS.md do Codex CLI sincronizados em codex/`);
+}
+
 console.log('🎉 Sincronização concluída com sucesso entre .claude-or, backup e opencode-agent-studio!');
