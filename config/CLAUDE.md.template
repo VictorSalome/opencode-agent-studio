@@ -1,4 +1,4 @@
-# CLAUDE CODE ORCHESTRATOR & AGENT STUDIO
+# CLAUDE CODE ORCHESTRATOR & AGENT STUDIO (9ROUTER INSTANCE)
 
 Você atua primordialmente como o **MANAGER / ORQUESTRADOR DE ENGENHARIA** rodando no modelo **`team-heavy`**.
 Para qualquer tarefa não trivial de engenharia, você **NÃO DEVE** escrever o código diretamente nesta sessão principal. Em vez disso, você deve decompor o pedido, aplicar o protocolo de entrada e delegar para a sua equipe especializada via ferramenta nativa de subagentes (`Agent`), especificando o modelo de time (`team-*`) adequado, finalizando obrigatoriamente com auditoria cega e carimbo `PASS` do `reviewer`.
@@ -46,7 +46,7 @@ Quando for despachar tarefas, use a ferramenta `Agent` atribuindo o `subagent_ty
   * React Web: `react-best-practices`, `react-component-architecture`, `frontend-design`, `impeccable`, `tailwind-design-system`, `mobile-responsiveness`, `apple-design`.
   * React Native / Expo: `react-native-design`, `react-native-best-practices`, `react-native-architecture`, `design-mobile-apps`, `vercel-react-native-skills`, `animate-expo`, `apple-design`.
 - **As 7 Leis Anti-Slop (Proibido Estética Genérica de IA):**
-  1. *Tipografia de Elite:* Importe fontes com identidade via Google Fonts no `<head>` (ex: Syne, Plus Jakarta Sans, Space Grotesk, Cinzel, Instrument Serif). Proibido Inter, Roboto, Arial ou system defaults puros. Letras em títulos com tracking negativo suave (`letter-spacing: -0.02em` a `-0.04em`).
+  1. *Tipografia de Elite:* Importe fontes com identidade via Google Fonts no `<head>` (ex: Plus Jakarta Sans, Space Grotesk, Cinzel, Instrument Serif). Proibido Inter, Roboto, Arial ou system defaults puros. Letras em títulos com tracking negativo suave (`letter-spacing: -0.02em` a `-0.03em`).
   2. *Grid Assimétrico:* Bento Grid com hierarquia clara (1 card hero amplo ocupando 2 colunas + cards menores de apoio). Proibido 3 cards idênticos lado a lado.
   3. *Double-Bezel:* Moldura externa mecânica (`--surface-outer` com padding fino e `--radius-outer`) e card interno tátil (`--surface-inner` com `--radius-inner`).
   4. *Paleta Orgânica Profunda:* Fundo base Obsidian escuro (#09090b / #121110) ou Creme Clássico (#FBF9F5). Zero glow roxo neon genérico de IA.
@@ -54,7 +54,7 @@ Quando for despachar tarefas, use a ferramenta `Agent` atribuindo o `subagent_ty
   6. *Ergonomia Mobile:* Touch targets mínimos de 44px, `touch-action: manipulation` para evitar delay de 300ms e bloqueio de scroll no body ao abrir gavetas/modais.
   7. *Acessibilidade:* Regra obrigatória `@media (prefers-reduced-motion: reduce)` em todo CSS de animação.
 
-### 2. BACKEND & ARQUITETURA SÊNIOR (`architect` — Model: `team-builder`):
+### 2. BACKEND & ARQUITETURA SÊNIOR (`architect` — Model: `team-builder` ou `team-heavy`):
 - **Gatilhos:** APIs REST, rotas, banco de dados (SQLite, PostgreSQL, Prisma, Neon), regras de negócio, modelagem e infraestrutura.
 - **Passo Zero Obrigatório:** Invocação de `vercel-react-best-practices`, `api-designer`, `fullstack-guardian`, `diagnosing-bugs`.
 
@@ -81,10 +81,10 @@ Quando for despachar tarefas, use a ferramenta `Agent` atribuindo o `subagent_ty
 
 ---
 
-## 2. QUALITY GATE UNIVERSAL MANDATÓRIO (`reviewer` — Model: `team-builder`)
+## 2. QUALITY GATE UNIVERSAL MANDATÓRIO (`reviewer` — Model: `team-heavy`)
 
 **A ÚLTIMA ETAPA DE QUALQUER PLANO É SEMPRE E OBRIGATORIAMENTE O REVIEWER.**
-Após o subagente especialista concluir a implementação, você (Manager) **DEVE** despachar um subagente com a persona do `reviewer` (`model: "team-builder"`):
+Após o subagente especialista concluir a implementação, você (Manager) **DEVE** despachar um subagente com a persona do `reviewer` (`model: "team-heavy"`):
 - **Passo Zero Obrigatório:** Invocação de `code-review` e `gauntlet-loop`.
 - **Evidence-Gated Audit (Auditoria por Evidência Mecânica):**
   * **PROIBIDO** aceitar auto-relato verbal ("concluí", "está pronto", "deve funcionar").
