@@ -7,13 +7,9 @@ const JEV_TOKEN = 'sk-6f30c8b06dc6eee8-zv4y2k-64af2432';
 const JEV_MODEL = 'oc/jev-1.13-free';
 
 /**
- * Consulta o System One (Jev) via 9Router
- * @param {string} state - Contexto a avaliar
- * @param {Record<string, { type: 'noul', instructions: string }>} questions - Perguntas tipadas
- * @param {number} timeoutMs - Timeout em milissegundos
- * @returns {Promise<Record<string, number>>} Mapa com probabilidades (0.0 a 1.0)
+ * Executa uma requisição ao Jev System One
  */
-function askJev(state, questions, timeoutMs = 2500) {
+function askJevOnce(state, questions, timeoutMs) {
   return new Promise((resolve, reject) => {
     const payload = JSON.stringify({
       model: JEV_MODEL,
@@ -46,8 +42,15 @@ function askJev(state, questions, timeoutMs = 2500) {
             const result = {};
             if (parsed.answers) {
               for (const [key, val] of Object.entries(parsed.answers)) {
-                if (val && typeof val.noul === 'number') {
+                if (!val) continue;
+                if (typeof val.noul === 'number') {
                   result[key] = val.noul;
+                } else if (val.choice !== undefined) {
+                  result[key] = {
+                    choice: val.choice,
+                    confidence: typeof val.confidence === 'number' ? val.confidence : 1,
+                    probabilities: val.probabilities || {}
+                  };
                 }
               }
             }
@@ -71,9 +74,27 @@ function askJev(state, questions, timeoutMs = 2500) {
 }
 
 /**
- * Verifica probabilidade de comando bash ser destrutivo
+ * Consulta o System One (Jev) via 9Router com 1 retry rápido (técnica jev-gateway)
+ * Suporta perguntas noul e choice com validação tipada.
+ * @param {string} state - Contexto a avaliar
+ * @param {Record<string, any>} questions - Perguntas tipadas
+ * @param {number} timeoutMs - Timeout em milissegundos
+ * @returns {Promise<Record<string, any>>}
+ */
+async function askJev(state, questions, timeoutMs = 4000) {
+  try {
+    return await askJevOnce(state, questions, timeoutMs);
+  } catch {
+    await new Promise((r) => setTimeout(r, 100));
+    return await askJevOnce(state, questions, timeoutMs);
+  }
+}
+
+/**
+ * Verifica perigo do comando com validação cruzada (destruição + necessidade de confirmação)
+ * Técnica inspirada no jev-gateway: cross-check noul
  * @param {string} command
- * @returns {Promise<number>} Probabilidade de destruição (0.0 a 1.0)
+ * @returns {Promise<number>} Probabilidade ponderada de risco (0.0 a 1.0)
  */
 async function checkCommandDanger(command) {
   try {
@@ -82,51 +103,67 @@ async function checkCommandDanger(command) {
         type: 'noul',
         instructions:
           'Does this shell command permanently delete files, drop databases, force push git branches or wipe data?'
+      },
+      needs_confirmation: {
+        type: 'noul',
+        instructions:
+          'Should a safe system ask human confirmation before running this command?'
       }
     });
-    return res.is_destructive ?? 0;
+
+    const isDestructive = typeof res.is_destructive === 'number' ? res.is_destructive : 0;
+    const needsConfirm = typeof res.needs_confirmation === 'number' ? res.needs_confirmation : 0;
+
+    return Math.max(isDestructive, needsConfirm);
   } catch {
-    // Fail-safe: se Jev estiver fora, retorna 0 para não travar
+    // Fail-open: se Jev estiver fora, retorna 0 para não travar
     return 0;
   }
 }
 
 /**
- * Classifica a persona de engenharia mais indicada para a tarefa
+ * Classifica a persona de engenharia ideal com choice + noul cross-check
  * @param {string} task
- * @returns {Promise<{ agent: string, confidence: number }>}
+ * @returns {Promise<{ agent: string, confidence: number, needsSpecialist: number }>}
  */
 async function classifyTaskAgent(task) {
   try {
     const res = await askJev(task, {
-      is_ui: {
-        type: 'noul',
-        instructions: 'Is this task mainly about frontend, UI/UX, styling, Tailwind, components, or visual layouts?'
+      target_agent: {
+        type: 'choice',
+        instructions: 'Which engineering specialist subagent should handle this task?',
+        criteria: {
+          designer: 'UI/UX, CSS, Tailwind, layouts, animations, mobile design',
+          architect: 'Backend API, DB schemas, system architecture, core logic',
+          secops: 'Security audit, OWASP, pentest, vulnerability check, auth hardening',
+          tester: 'Writing test suites, end-to-end tests, Playwright, integration testing, QA',
+          reviewer: 'Code review, PR diff audit, clean code standards',
+          documenter: 'Technical documentation, architecture diagrams, README',
+          explorer: 'Codebase search, file mapping, quick investigation',
+          analyst: 'Requirements gathering, scope breakdown, planning, user stories',
+          none: 'General conversational question, no engineering action needed'
+        }
       },
-      is_backend: {
+      needs_specialist: {
         type: 'noul',
-        instructions: 'Is this task mainly about backend APIs, database models, business logic, or server routes?'
-      },
-      is_secops: {
-        type: 'noul',
-        instructions: 'Is this task about penetration testing, security auditing, tokens, or vulnerabilities?'
-      },
-      is_tester: {
-        type: 'noul',
-        instructions: 'Is this task about E2E tests, browser automation, or test suites?'
+        instructions: 'Does this task require delegating to a specialist subagent?'
       }
     });
 
-    const candidates = [
-      { agent: 'designer', prob: res.is_ui || 0 },
-      { agent: 'architect', prob: res.is_backend || 0 },
-      { agent: 'secops', prob: res.is_secops || 0 },
-      { agent: 'tester', prob: res.is_tester || 0 }
-    ].sort((a, b) => b.prob - a.prob);
+    const target = res.target_agent;
+    const needsSpecialist = typeof res.needs_specialist === 'number' ? res.needs_specialist : 0.5;
 
-    return { agent: candidates[0].agent, confidence: candidates[0].prob };
+    if (target && target.choice && target.choice !== 'none') {
+      return {
+        agent: target.choice,
+        confidence: target.confidence,
+        needsSpecialist
+      };
+    }
+
+    return { agent: 'none', confidence: 0, needsSpecialist };
   } catch {
-    return { agent: 'architect', confidence: 0 };
+    return { agent: 'none', confidence: 0, needsSpecialist: 0 };
   }
 }
 

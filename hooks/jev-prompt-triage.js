@@ -36,7 +36,7 @@ process.stdin.on('end', async () => {
     // Consulta instantânea ao Jev no 9Router
     const classification = await classifyTaskAgent(prompt);
 
-    if (classification && classification.confidence >= 0.60) {
+    if (classification && classification.agent !== 'none' && classification.confidence >= 0.60) {
       const pct = (classification.confidence * 100).toFixed(0);
       const response = {
         hookSpecificOutput: {
