@@ -102,7 +102,23 @@ if (fs.existsSync(codexHome)) {
   if (fs.existsSync(codexConfig)) {
     fs.copyFileSync(codexConfig, path.join(studioCodexDir, 'config.toml'));
   }
-  console.log(`✅ Configurações e AGENTS.md do Codex CLI sincronizados em codex/`);
+
+  // Sincroniza skill jev-system-one e hooks
+  const codexJevSkill = path.join(codexHome, 'skills', 'jev-system-one', 'SKILL.md');
+  const studioJevSkillDir = path.join(studioCodexDir, 'skills', 'jev-system-one');
+  if (fs.existsSync(codexJevSkill)) {
+    fs.mkdirSync(studioJevSkillDir, { recursive: true });
+    fs.copyFileSync(codexJevSkill, path.join(studioJevSkillDir, 'SKILL.md'));
+  }
+
+  const codexHook = path.join(codexHome, 'hooks', 'jev-triage.js');
+  const studioHooksDir = path.join(studioCodexDir, 'hooks');
+  if (fs.existsSync(codexHook)) {
+    fs.mkdirSync(studioHooksDir, { recursive: true });
+    fs.copyFileSync(codexHook, path.join(studioHooksDir, 'jev-triage.js'));
+  }
+
+  console.log(`✅ Configurações, AGENTS.md, hooks e skills do Codex CLI sincronizados em codex/`);
 }
 
 console.log('🎉 Sincronização concluída com sucesso entre .claude-or, backup e opencode-agent-studio!');

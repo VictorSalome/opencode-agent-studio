@@ -27,5 +27,6 @@ default_subagent_model = "freecode"
 
 [features]
 multi_agent_v2 = true
+hooks = true
 
 
