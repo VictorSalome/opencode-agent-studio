@@ -259,6 +259,19 @@ if (shouldInstallOpenCode) {
 
   console.log("✅ Sucesso: Configuração do OpenCode atualizada com sucesso!");
   console.log(`   Destino: ${configFile}`);
+
+  // Instalação do Plugin Jev no OpenCode
+  const pluginSrc = path.join(__dirname, 'plugins', 'jev-opencode-plugin.js');
+  const pluginDestDir = path.join(openCodeConfigDir, 'plugins');
+  if (fs.existsSync(pluginSrc)) {
+    try {
+      fs.mkdirSync(pluginDestDir, { recursive: true });
+      fs.copyFileSync(pluginSrc, path.join(pluginDestDir, 'jev-opencode-plugin.js'));
+      console.log("⚡ Plugin nativo 'jev-opencode-plugin.js' instalado em plugins/");
+    } catch (e) {
+      console.error("Erro ao copiar plugin OpenCode:", e.message);
+    }
+  }
 }
 
 // Instalação do CLI Jev System One

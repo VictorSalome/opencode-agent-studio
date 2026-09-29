@@ -83,4 +83,10 @@ if (fs.existsSync(binJev)) {
   console.log(`✅ Binário CLI 'jev' sincronizado em ~/.npm-global/bin e ~/.local/bin`);
 }
 
+// 6. Plugins OpenCode
+const opencodePluginsDir = path.join(homeDir, '.config', 'opencode', 'plugins');
+const studioPluginsDir = path.join(studioDir, 'plugins');
+const pluginsCount = copyDirRecursive(opencodePluginsDir, studioPluginsDir);
+console.log(`✅ Plugins OpenCode sincronizados (${pluginsCount} arquivos)`);
+
 console.log('🎉 Sincronização concluída com sucesso entre .claude-or, backup e opencode-agent-studio!');

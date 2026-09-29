@@ -37,17 +37,24 @@ O `claude-or` integra o Jev em dois momentos automáticos do ciclo de vida:
 
 ## 3. Como Funciona no OpenCode
 
-1. **Acesso Global via CLI (`jev`):**
-   * O executável global `jev` (`~/.npm-global/bin/jev`) está no `$PATH` do OpenCode.
-   * Qualquer subagente (`architect`, `secops`, `tester`) pode executar chamadas de triagem sem gastar tokens da cota do OpenCode:
+O OpenCode agora também conta com o motor Jev **100% automático e invisível**, através do plugin nativo `~/.config/opencode/plugins/jev-opencode-plugin.js`:
+
+1. **Triagem Automática em Background (`session.context`):**
+   * Disparado a cada turno da conversa antes do LLM gerar texto.
+   * O Jev avalia o texto do usuário em ~250ms e injeta a tag `<jev_system_one_triage>` no system prompt do Manager recomendando o subagente ideal.
+   * O usuário não precisa mencionar `jev` nem `route`. Tudo flui em linguagem natural.
+
+2. **Guardrail de Comandos Shell (`tool.execute.before`):**
+   * Intercepta qualquer chamada às ferramentas `shell` e `bash` no OpenCode.
+   * Executa fast-path para comandos seguros (<1ms) e valida comandos perigosos com o Jev.
+   * Se o risco de destruição for $\ge 70\%$, a execução é abortada antes de tocar no sistema operacional e o OpenCode recebe erro com a explicação do bloqueio.
+
+3. **Acesso Global via CLI (`jev`):**
+   * O binário `jev` continua disponível no `$PATH` caso o usuário ou subagentes queiram fazer checagens diretas via terminal:
      ```bash
      jev danger "rm -rf build/"
      jev route "Desenvolver formulário acessível em React"
      ```
-2. **API HTTP Direta:**
-   * Scripts, plugins ou ferramentas em Node.js no OpenCode podem bater direto em `http://localhost:20128/v1/systemone` com header `Authorization: Bearer sk-6f30c...`.
-3. **Triagem de Orquestração:**
-   * Em vez de fazer uma chamada cara a um modelo Staff para decidir quem deve executar uma tarefa, o orquestrador executa `jev route "<tarefa>"` e obtém a especialidade ideal em 300ms.
 
 ---
 
