@@ -97,6 +97,7 @@ function configureClaudeDirectory(targetDir, name) {
   const delegationScript = path.join(hooksDest, 'enforce-agent-delegation.js');
   const formatScript = path.join(hooksDest, 'auto-format.js');
   const sessionStartScript = path.join(hooksDest, 'session-start.js');
+  const guardBashScript = path.join(hooksDest, 'guard-bash-commands.js');
 
   settings.hooks.SessionStart = [
     {
@@ -105,6 +106,10 @@ function configureClaudeDirectory(targetDir, name) {
   ];
 
   settings.hooks.PreToolUse = [
+    {
+      matcher: "Bash",
+      hooks: [{ type: "command", command: `node "${guardBashScript}"` }]
+    },
     {
       matcher: "Write",
       hooks: [{ type: "command", command: `node "${delegationScript}"` }]
