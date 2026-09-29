@@ -20,7 +20,14 @@ process.stdin.on('end', async () => {
       process.exit(0);
     }
 
+    // Toggle rápido: desativa o guardrail se a variável existir
+    if (process.env.DISABLE_JEV === '1' || process.env.JEV_GUARD === '0') {
+      process.exit(0);
+    }
+
     const payload = JSON.parse(inputBuffer);
+    const fs = require('fs');
+    try { fs.appendFileSync('/tmp/jev-hook.log', JSON.stringify(payload) + '\n'); } catch {}
     const command = payload?.tool_input?.command || payload?.parameters?.command;
 
     if (!command || typeof command !== 'string') {
@@ -39,12 +46,17 @@ process.stdin.on('end', async () => {
     const suspiciousRegex = /(rm\s|drop\s|truncate|git\s+push\s+.*--force|git\s+reset\s+--hard|git\s+clean\s+-f|dd\s+if|mkfs|chmod\s+-R\s+777|chown\s+-R|> \/dev)/i;
     if (suspiciousRegex.test(trimmed)) {
       const dangerProb = await checkCommandDanger(trimmed);
+      try { fs.appendFileSync('/tmp/jev-hook.log', `[DANGER PROB]: ${dangerProb}\n`); } catch {}
 
       if (dangerProb >= 0.70) {
         const response = {
-          permissionDecision: 'deny',
-          message: `[GUARDRAIL JEV SYSTEM ONE]: O comando '${trimmed}' tem ${(dangerProb * 100).toFixed(0)}% de probabilidade de destruição irreversível de arquivos ou histórico. Ação bloqueada por segurança. Peça autorização explícita do usuário antes de rodar.`
+          hookSpecificOutput: {
+            hookEventName: 'PreToolUse',
+            permissionDecision: 'deny',
+            permissionDecisionReason: `[GUARDRAIL JEV SYSTEM ONE]: O comando '${trimmed}' tem ${(dangerProb * 100).toFixed(0)}% de probabilidade de destruição irreversível de arquivos ou histórico. Ação bloqueada por segurança. Peça autorização explícita do usuário antes de rodar.`
+          }
         };
+        try { fs.appendFileSync('/tmp/jev-hook.log', `[OUTPUT SENT]: ${JSON.stringify(response)}\n`); } catch {}
         process.stdout.write(JSON.stringify(response));
         process.exit(0);
       }

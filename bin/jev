@@ -1,0 +1,76 @@
+#!/usr/bin/env node
+
+/**
+ * Jev System One CLI Tool
+ * Integração local com 9Router (http://localhost:20128/v1/systemone)
+ */
+
+const { askJev, checkCommandDanger, classifyTaskAgent } = require('/Users/victorsalome/.claude-or/hooks/lib/jev');
+
+const [,, cmd, ...args] = process.argv;
+const input = args.join(' ');
+
+async function main() {
+  if (!cmd || cmd === '--help' || cmd === '-h') {
+    console.log(`
+Uso do Jev CLI:
+  jev danger "<comando>"     Avalia se um comando shell é destrutivo (0 a 100%)
+  jev route "<tarefa>"       Classifica e indica o melhor subagente
+  jev ask "<state>" "<perg>" Faz pergunta noul direta para o modelo
+  jev status                 Verifica conectividade com o 9Router System One
+    `);
+    process.exit(0);
+  }
+
+  if (cmd === 'status') {
+    try {
+      const res = await askJev('ping', { ok: { type: 'noul', instructions: 'Is this working?' } }, 2000);
+      console.log(`[JEV OK]: 9Router System One ativo. Resposta:`, res);
+    } catch (e) {
+      console.error(`[JEV ERROR]:`, e.message);
+      process.exit(1);
+    }
+    return;
+  }
+
+  if (cmd === 'danger') {
+    if (!input) {
+      console.error('Erro: informe o comando a avaliar. Ex: jev danger "rm -rf /dados"');
+      process.exit(1);
+    }
+    const prob = await checkCommandDanger(input);
+    const pct = (prob * 100).toFixed(0);
+    const isDangerous = prob >= 0.70;
+    console.log(`Comando: "${input}"`);
+    console.log(`Risco:   ${pct}% [${isDangerous ? 'PERIGOSO / BLOQUEADO' : 'SEGURO / PERMITIDO'}]`);
+    process.exit(isDangerous ? 1 : 0);
+  }
+
+  if (cmd === 'route') {
+    if (!input) {
+      console.error('Erro: informe a tarefa. Ex: jev route "Criar tela com Tailwind"');
+      process.exit(1);
+    }
+    const res = await classifyTaskAgent(input);
+    console.log(`Tarefa: "${input}"`);
+    console.log(`Agente: ${res.agent} (${(res.confidence * 100).toFixed(0)}% confiança)`);
+    return;
+  }
+
+  if (cmd === 'ask') {
+    const state = args[0];
+    const instruction = args.slice(1).join(' ');
+    if (!state || !instruction) {
+      console.error('Erro: informe state e pergunta. Ex: jev ask "código" "tem bug de segurança?"');
+      process.exit(1);
+    }
+    const res = await askJev(state, { q: { type: 'noul', instructions: instruction } });
+    console.log(`Probabilidade: ${(res.q * 100).toFixed(1)}%`);
+    return;
+  }
+
+  console.error(`Comando desconhecido: ${cmd}. Use "jev --help".`);
+  process.exit(1);
+}
+
+main();

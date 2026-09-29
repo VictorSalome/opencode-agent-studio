@@ -254,6 +254,23 @@ if (shouldInstallOpenCode) {
   console.log(`   Destino: ${configFile}`);
 }
 
+// Instalação do CLI Jev System One
+const binJevSrc = path.join(__dirname, 'bin', 'jev');
+if (fs.existsSync(binJevSrc)) {
+  const destPaths = [
+    path.join(homeDir, '.npm-global', 'bin', 'jev'),
+    path.join(homeDir, '.local', 'bin', 'jev')
+  ];
+  for (const d of destPaths) {
+    try {
+      fs.mkdirSync(path.dirname(d), { recursive: true });
+      fs.copyFileSync(binJevSrc, d);
+      fs.chmodSync(d, 0o755);
+    } catch {}
+  }
+  console.log("⚡ CLI 'jev' System One instalado globalmente.");
+}
+
 console.log("");
 console.log("🎉 Instalação concluída com sucesso!");
 console.log("👉 Para começar:");

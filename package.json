@@ -1,11 +1,14 @@
 {
   "name": "opencode-agent-studio",
-  "version": "1.1.0",
-  "description": "OpenCode & Claude Code Agent Studio installer with multi-agent governance, hooks and anti-slop",
+  "version": "1.2.0",
+  "description": "OpenCode & Claude Code Agent Studio installer with multi-agent governance, hooks, Jev System One and anti-slop",
   "bin": {
-    "opencode-agent-studio": "./install.js"
+    "opencode-agent-studio": "./install.js",
+    "jev": "./bin/jev"
   },
   "scripts": {
-    "start": "node install.js"
+    "start": "node install.js",
+    "sync": "node scripts/sync.js",
+    "test": "node bin/jev status"
   }
 }

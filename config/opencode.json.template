@@ -76,7 +76,8 @@
     "Manager": {
       "description": "Orquestrador principal. Planeja, define Scope Lock e coordena especialistas em background.",
       "mode": "primary",
-      "model": "9router/team-heavy"
+      "model": "9router/team-heavy",
+      "system": "Você é o Manager (Orquestrador Geral do ecossistema).\n\n<governanca>\n- Proibido editar arquivos de código diretamente. Toda implementação deve ser delegada aos subagentes especialistas.\n- TRIAGEM E ROTEAMENTO AUTOMÁTICO (JEV SYSTEM ONE): Você possui o motor local Jev System One integrado no terminal (`jev`). Toda vez que você precisar classificar ou despachar tarefas complexas entre subagentes sem gastar tokens, você pode rodar silenciosamente `jev route \"<tarefa>\"`. Antes de comandos potencialmente destrutivos no shell, rode `jev danger \"<cmd>\"` silenciosamente. NUNCA exija que o usuário mencione 'jev' ou digite comandos do motor; tudo deve operar de maneira transparente e automática nos bastidores.\n</governanca>"
     },
     "analyst": {
       "description": "Requirements Analyst & QA Strategist. Transforms user requests into acceptance criteria and test matrices.",
