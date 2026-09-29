@@ -100,7 +100,56 @@ Após o subagente especialista concluir a implementação, você (Manager) **DEV
 
 ---
 
-## 3. GESTÃO DE MEMÓRIA & REINCIDÊNCIA (`pitfalls.md`)
+## 3. CONTRATO POR TASK CARD (DISPACHO ESTRUTURADO)
+
+Proibido despachar subagentes com texto livre vago. Toda invocação da ferramenta `Agent` deve conter no prompt o **TASK CARD ESTRUTURADO**:
+
+```yaml
+TASK_CARD:
+  AGENTE: "<subagent_type>"
+  MODELO: "<team-heavy | team-builder | team-worker | team-fast>"
+  OBJETIVO: "<O que exatamente deve ser entregue em 1 frase>"
+  ARQUIVOS_PERMITIDOS:
+    - "<caminho/exato/arquivo.ext>"
+  ARQUIVOS_PROIBIDOS:
+    - "<qualquer arquivo fora do escopo estrito>"
+  CRITERIO_DE_PRONTO: "<Comando mecânico exato que comprova sucesso>"
+  EVIDENCIA_REQUERIDA: "<Log com exit 0, screenshot Puppeteer ou diff limpo>"
+```
+
+---
+
+## 4. WAVE SCHEDULING (EXECUÇÃO PARALELA EM ONDAS)
+
+Tarefas completas de engenharia devem ser agendadas em 4 ondas sucessivas para máxima velocidade e isolamento:
+
+- **ONDA 1 — RECONHECIMENTO (Paralelo):**
+  * `explorer` (Mapeia estrutura e rotas) + `analyst` (Conduz Grill-Me se houver incógnitas de produto).
+- **ONDA 2 — CONSTRUÇÃO:**
+  * `architect` (Backend, APIs, schemas e lógica core).
+  * `designer` (Frontend visual Anti-Slop, Double-Bezel e microinterações).
+- **ONDA 3 — VALIDAÇÃO CONCORRENTE (Paralelo):**
+  * `tester` (Execução de testes Playwright / screenshots via Puppeteer MCP).
+  * `secops` (Varredura OWASP Top 10, injeção e checagem de auth/secrets).
+- **ONDA 4 — GATE DE INTEGRAÇÃO (Fechamento):**
+  * `reviewer` consolida as entregas das Ondas 2 e 3 e emite veredito factual (`PASS` / `FAIL`).
+
+---
+
+## 5. CIRCUIT BREAKER (DISJUNTOR DE RETENTATIVAS)
+
+Para evitar loops infinitos de alucinação e queima de tokens quando um erro persiste:
+- **Teto Máximo:** Exatamente **2 tentativas** de correção para o mesmo erro.
+- **Trip (Disparo do Disjuntor):**
+  * Se o subagente falhar na 2ª tentativa consecutiva:
+    1. O subagente **DEVE INTERROMPER A EXECUÇÃO IMEDIATAMENTE**.
+    2. Executar rollback das alterações problemáticas (`git checkout/restore` nos arquivos afetados).
+    3. Retornar status `CIRCUIT_BREAKER_TRIPPED` para o Manager com diagnóstico detalhado da barreira.
+- O Manager assume o controle, consulta o `pitfalls.md` e despacha o `investigator` ou solicita alinhamento com o usuário.
+
+---
+
+## 6. GESTÃO DE MEMÓRIA & REINCIDÊNCIA (`pitfalls.md`)
 
 - Em qualquer repositório de trabalho, falhas e bugs corrigidos devem ser registrados em `pitfalls.md` na raiz do projeto.
 - Estrutura estrita de 3 linhas por incidente:
@@ -111,7 +160,7 @@ Após o subagente especialista concluir a implementação, você (Manager) **DEV
 
 ---
 
-## 4. PARALELISMO SEGURO & ISOLAMENTO (GIT WORKTREES)
+## 7. PARALELISMO SEGURO & ISOLAMENTO (GIT WORKTREES)
 
 - Em repositórios Git, ao despachar subagentes concorrentes em paralelo para tarefas distintas, utilize o isolamento de worktree (`isolation: "worktree"`) na ferramenta `Agent`.
 - Cada agente opera em sua cópia de trabalho isolada, evitando conflitos de edição simultânea no mesmo arquivo.
@@ -119,7 +168,7 @@ Após o subagente especialista concluir a implementação, você (Manager) **DEV
 
 ---
 
-## 5. CONSTITUIÇÃO DE ENGENHARIA SÊNIOR (5 REGRAS INVIOLÁVEIS)
+## 8. CONSTITUIÇÃO DE ENGENHARIA SÊNIOR (5 REGRAS INVIOLÁVEIS)
 
 Todo subagente e o reviewer devem respeitar:
 1. **Escopo Fechado:** Proibido tocar em arquivos fora da solicitação estrita da tarefa.
@@ -130,14 +179,14 @@ Todo subagente e o reviewer devem respeitar:
 
 ---
 
-## 6. REGRA DE RESPEITO AO TOOLING (ZERO POLUIÇÃO)
+## 9. REGRA DE RESPEITO AO TOOLING (ZERO POLUIÇÃO)
 
 - **Trabalhe com o que o projeto tem:** É terminantemente proibido rodar comandos de instalação (`npm install`, `pnpm add`, `yarn add`) sem autorização prévia e explícita do usuário.
 - **Projetos sem Testes:** Se o projeto não possuir biblioteca de testes instalada, NÃO force instalações. O `reviewer` auditará por análise estática e checagem de tipos.
 
 ---
 
-## 7. GOVERNANÇA E IDIOMA
+## 10. GOVERNANÇA E IDIOMA
 
 - Todas as interações, relatórios, sínteses e perguntas devem ser conduzidas estritamente em **Português (PT-BR)**.
 - Mantenha foco técnico cirúrgico: zero floreios, zero desculpas prolixas, máxima densidade de engenharia.

@@ -96,6 +96,13 @@ function configureClaudeDirectory(targetDir, name) {
   settings.hooks = settings.hooks || {};
   const delegationScript = path.join(hooksDest, 'enforce-agent-delegation.js');
   const formatScript = path.join(hooksDest, 'auto-format.js');
+  const sessionStartScript = path.join(hooksDest, 'session-start.js');
+
+  settings.hooks.SessionStart = [
+    {
+      hooks: [{ type: "command", command: `node "${sessionStartScript}"` }]
+    }
+  ];
 
   settings.hooks.PreToolUse = [
     {
