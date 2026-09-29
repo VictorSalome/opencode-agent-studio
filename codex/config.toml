@@ -1,5 +1,6 @@
 model = "freecode"
 model_provider = "9router"
+approval_policy = "never"
 
 [tui]
 screen_reader_detection_done = true
