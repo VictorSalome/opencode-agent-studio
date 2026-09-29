@@ -1,4 +1,4 @@
-model = "freecode"
+model = "team-builder"
 model_provider = "9router"
 approval_policy = "never"
 
@@ -24,7 +24,7 @@ wire_api = "responses"
 Authorization = "Bearer sk-6f30c8b06dc6eee8-zv4y2k-64af2432"
 
 [agents]
-default_subagent_model = "freecode"
+default_subagent_model = "team-worker"
 
 [features]
 multi_agent_v2 = true
