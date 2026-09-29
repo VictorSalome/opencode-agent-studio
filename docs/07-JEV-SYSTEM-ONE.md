@@ -17,26 +17,21 @@ O 9Router (v0.5.91+) expõe localmente o endpoint System One:
 
 ## 2. Como Funciona no Claude Code (`claude-or`)
 
-1. **Interceptação por Hook PreToolUse:**
-   * Configurado em `~/.claude-or/settings.json` no matcher `"Bash"`.
-   * Dispara o script `~/.claude-or/hooks/guard-bash-commands.js`.
-2. **Fast-Path Local (<2ms):**
-   * Comandos seguros (`git status`, `git diff`, `ls`, `grep`, `npm test`, `tsc`) passam instantaneamente sem chamada de rede.
-3. **Avaliação pelo Jev:**
-   * Comandos de alto risco (`rm `, `git push --force`, `git reset --hard`, `drop table`, `truncate`) são enviados ao Jev.
-   * Se a probabilidade de destruição for $\ge 70\%$, o hook emite:
-     ```json
-     {
-       "hookSpecificOutput": {
-         "hookEventName": "PreToolUse",
-         "permissionDecision": "deny",
-         "permissionDecisionReason": "[GUARDRAIL JEV SYSTEM ONE]: O comando tem 86% de probabilidade de destruição..."
-       }
-     }
-     ```
-   * O Claude Code é mecanicamente impedido de rodar o comando e pede confirmação expressa ao usuário.
-4. **Fail-Open:**
-   * Caso o 9Router caia ou oscile, o hook libera a execução para não congelar o fluxo de trabalho.
+O `claude-or` integra o Jev em dois momentos automáticos do ciclo de vida:
+
+### A. Triagem Contínua de Toda Mensagem (`UserPromptSubmit`)
+* Hook configurado em `~/.claude-or/hooks/jev-prompt-triage.js`.
+* Disparado **imediatamente quando o usuário envia qualquer pedido no chat** (antes do modelo principal começar a gerar).
+* O Jev avalia o texto em 250ms e injeta no contexto do Orquestrador:
+  ```
+  [TRIAGEM JEV SYSTEM ONE]: Esta solicitação foi avaliada determinísticamente pelo Jev (9Router). Especialista recomendado: 'designer' (98% de confiança). Priorize a delegação para este subagente.
+  ```
+* Garante que **toda tarefa enviada consulte o Jev no 9Router** e chegue ao Orquestrador já com a rota ideal mastigada.
+
+### B. Guardrail de Comandos Perigosos (`PreToolUse`)
+* Hook configurado em `~/.claude-or/hooks/guard-bash-commands.js` no matcher `"Bash"`.
+* Se o modelo tentar rodar um comando com risco de destruição (`rm `, `git push --force`, `drop table`), o Jev avalia em 300ms.
+* Se risco $\ge 70\%$, emite `permissionDecision: "deny"` e impede a execução sem intervenção humana.
 
 ---
 

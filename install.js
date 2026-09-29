@@ -98,6 +98,13 @@ function configureClaudeDirectory(targetDir, name) {
   const formatScript = path.join(hooksDest, 'auto-format.js');
   const sessionStartScript = path.join(hooksDest, 'session-start.js');
   const guardBashScript = path.join(hooksDest, 'guard-bash-commands.js');
+  const jevTriageScript = path.join(hooksDest, 'jev-prompt-triage.js');
+
+  settings.hooks.UserPromptSubmit = [
+    {
+      hooks: [{ type: "command", command: `node "${jevTriageScript}"` }]
+    }
+  ];
 
   settings.hooks.SessionStart = [
     {
