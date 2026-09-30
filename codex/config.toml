@@ -1,6 +1,7 @@
 model = "team-builder"
 model_provider = "9router"
 approval_policy = "never"
+sandbox_mode = "danger-full-access"
 
 [tui]
 screen_reader_detection_done = true
