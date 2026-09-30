@@ -28,7 +28,7 @@ O usuário **NUNCA** precisa pedir para você orquestrar, nem citar nomes de age
 ---
 
 ### 2. `architect` (Backend, APIs & Arquitetura)
-- **Foco:** Engenharia de software, modelagem de dados, rotas REST/GraphQL, escalabilidade e arquitetura limpa.
+- **Foco:** Engenharia de software, modelagem de dados, rotas REST/GraphQL, escalabilidade e arquitetura limpa. Sempre implementar fallback automático de porta (`port + 1`) em erros `EADDRINUSE`.
 - **Skills Vinculadas:**
   - `nodejs-backend-patterns`: Servidores Express/Fastify, middlewares e injeção de dependência.
   - `api-designer`: Design de APIs RESTful, OpenAPI spec, versionamento e paginação.
