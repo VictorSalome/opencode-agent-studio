@@ -2,10 +2,16 @@ model = "team-builder"
 model_provider = "9router"
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
+model_context_window = 800000
+model_auto_compact_token_limit = 600000
+model_post_turn_compact_threshold_percent = 75
 
 [tui]
 screen_reader_detection_done = true
 theme = "ada"
+
+[tui.model_availability_nux]
+"gpt-6.1-sol" = 3
 
 [projects."/Users/victorsalome"]
 trust_level = "trusted"
